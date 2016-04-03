@@ -139,18 +139,22 @@ def split(picture, grad) :
     if (os.path.exists("tmp/") == False) :
         os.mkdir('tmp')
 
+    files = os.listdir("tmp/")
+    for f in files :
+        os.remove("tmp/"+str(f))
+
+
     if isinstance(picture,Image.Image) :
         
         files = list()
 
         spectrogram = numpy.asarray(picture)
 
-        v = spectrogram.shape[0]
-
+        v,h = spectrogram.shape[0],spectrogram.shape[1]
         tmp = grad[0]-grad[1]
         start = list()
         end = list()
-        completed = False
+        completed = True
 
         for i in range(0,len(grad)-1) :
             if (abs(tmp) > 40) :
@@ -163,31 +167,36 @@ def split(picture, grad) :
 
             tmp = -tmp + grad[i-1] - grad[i+1]
 
+
+
+        m = 20 # marge in pixels around a given signal
         a = 0
-        b = start[0]
+        b = max(start[0]-m,0)
         if (a == b) :
             signal = True
         else :
             signal = False
-        i = 0
+        i = 1
         j = 0
 
-        print(start)
-        print(end)
+        #print(start)
+        #print(end)
 
         for k in range(0,2*len(start)-1) :
-            print(a,b,spectrogram.shape[1])
+            #print(a,b,spectrogram.shape[1])
             pic = spectrogram[0:v-1:1,a:b:1]
             #print(spectrogram.shape)
             #print(pic.shape)
             pic2 = Image.fromarray(pic,'RGB')
-            a = b
+            a = max(b-m,0)
             if signal :
-                b = end[j]
+                if (j < len(end)) :
+                    b = min(end[j]+m,h)
                 i = i+1
                 name = "tmp/signal"+str(j)
             else :
-                b = start[i]
+                if (i < len(start)) :
+                    b = max(start[i]+m,0)
                 j = j+1
                 name = "tmp/silence"+str(i)
 
@@ -223,7 +232,7 @@ def padding(files,dimh,dimv) :
                 b = ceil(a/2)
                 a = a - b
 
-                row = ceil(numpy.zeros((1,v)))
+                row = ceil(numpy.zeros((1,v,3)))
 
                 for i in range(0,a - 1) :
                    pic2 = vstack(row,pic2)
@@ -236,7 +245,7 @@ def padding(files,dimh,dimv) :
                 b = ceil(a/2)
                 a = a - b
 
-                col = ceil(numpy.zeros((h,1)))
+                col = ceil(numpy.zeros((h,1,3)))
 
                 for i in range(0,a-1) :
                     pic2 = hstack(col,pic2)
