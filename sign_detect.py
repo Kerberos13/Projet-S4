@@ -14,7 +14,8 @@ from scipy import signal
 def openf(fileName) :
 
     if (os.path.exists(fileName)) : 
-        spectrogram = Image.open(fileName);
+        spectrogram = Image.open(fileName)
+        #print(isinstance(spectrogram,Image.Image))
         return spectrogram
 
     else :
@@ -29,7 +30,7 @@ def openf(fileName) :
 
 def closef(picture) :
 
-    if (type(picture) == PIL.Image) :
+    if (type(picture) == Image) :
         picture.close()
     else :
         print("Wrong Type - Fatal Error.\n")
@@ -44,7 +45,7 @@ def closef(picture) :
 
 def BW(picture) :
 
-    if (type(picture) == PIL.Image) :
+    if isinstance(picture,Image.Image) :
         picture = picture.convert('L')
         return picture
 
@@ -59,9 +60,10 @@ def BW(picture) :
 
 def norm(picture) :
 
-    if (type(picture) == PIL.Image) :
+    if isinstance(picture,Image.Image) :
 
         picture = numpy.asarray(picture)
+        picture.flags.writeable = True
         h,v = picture.shape[0],picture.shape[1]
 
         pmin = 255
@@ -72,7 +74,7 @@ def norm(picture) :
                 if (picture[i,j] <= pmin) :
                     pmin = picture[i,j]
                 if (picture[i,j] >= pmax) :
-                    pmax = piture[i,j]
+                    pmax = picture[i,j]
 
         alpha = ceil(255/(pmax - pmin))
         beta = pmin - 1
@@ -102,18 +104,22 @@ def hgrad(picture) :
                      [-1, 0, +1],
                      [-1, 0, +1]])
 
-    if (type(picture) == numpy.array) :
+    if isinstance(picture, numpy.ndarray) :
 
-        grad = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same');
+        grad = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same')
+        #print(picture.shape)
 
-        h,v = grad.shape[0],grad.shape[1]
-        grad2 = list()
+        v,h = grad.shape[0],grad.shape[1]
+        grad2 =list() 
 
         for i in range(0,h-1) :
             tmp = 0
             for j in range(0,v-1) :
                 tmp = tmp + grad[j,i]
-            grad2.append(ceil(tmp/v))
+            grad2.append(abs(ceil(tmp/v)))
+
+        #grad2.append(0)
+        #print(grad2)
 
         return grad2
 
@@ -133,13 +139,13 @@ def split(picture, grad) :
     if (os.path.exists("tmp/") == False) :
         os.mkdir('tmp')
 
-    if (type(picture) == PIL.Image) :
+    if isinstance(picture,Image.Image) :
         
         files = list()
 
         spectrogram = numpy.asarray(picture)
 
-        v = spectrogram.shape[1]
+        v = spectrogram.shape[0]
 
         tmp = grad[0]-grad[1]
         start = list()
@@ -166,9 +172,15 @@ def split(picture, grad) :
         i = 0
         j = 0
 
+        print(start)
+        print(end)
+
         for k in range(0,2*len(start)-1) :
-            pic = spectrogram[a:b:1,0:v:1]
-            pic2 = Image.fromarray(pic,'L')
+            print(a,b,spectrogram.shape[1])
+            pic = spectrogram[0:v-1:1,a:b:1]
+            #print(spectrogram.shape)
+            #print(pic.shape)
+            pic2 = Image.fromarray(pic,'RGB')
             a = b
             if signal :
                 b = end[j]
@@ -180,7 +192,7 @@ def split(picture, grad) :
                 name = "tmp/silence"+str(i)
 
             signal = not signal
-            pic2.save(name)
+            pic2.save(name+'.jpg')
             files.append(name)
 
         return files
