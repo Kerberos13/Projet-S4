@@ -187,9 +187,6 @@ def split(picture, grad) :
 
             tmp = -tmp + grad[i-1] - grad[i+1]
         
-        print(start)
-        print(end)
-        print(h,v)
 
         """
         v,h = spectrogram.shape[0],spectrogram.shape[1]
@@ -231,26 +228,23 @@ def split(picture, grad) :
         i = 1
         j = 0
 
-        #print(start)
-        #print(end)
 
         for k in range(0,2*len(start)) : # We actually split the original image according to the horizontal gradient calculated on the Black&White copy
-            #print(a,b,spectrogram.shape[1])
             pic = spectrogram[0:v-1:1,a:b:1]
-            #print(spectrogram.shape)
-            #print(pic.shape)
             pic2 = Image.fromarray(pic,'RGB')
             a = max(b-m,0)
             if signal :
                 if (j < len(end)) :
                     b = min(end[j]+m,h)
                 i = i+1
-                name = "tmp/"+str(i+j-2)+"_signal"
+                tau = str(i+j-2)
+                name = "tmp/"+"0"*(3-len(tau))+tau+"_signal"
             else :
                 if (i < len(start)) :
                     b = max(start[i]+m,0)
                 j = j+1
-                name = "tmp/"+str(i+j-2)+"_silence"
+                tau = str(i+j-2)
+                name = "tmp/"+"0"*(3-len(tau))+tau+"_silence"
 
             signal = not signal
             name = name+".jpg"
@@ -259,7 +253,8 @@ def split(picture, grad) :
 
 
         pic2 = Image.fromarray(spectrogram[0:v-1:1,a:h-1:1],'RGB')
-        name = "tmp/"+str(i+j-1)+"_silence.jpg"
+        tau = str(i+j-1)
+        name = "tmp/"+"0"*(3-len(tau))+tau+"_silence.jpg"
         pic2.save(name)
         files.append(name)
 
@@ -293,10 +288,10 @@ def padding(files,dimh,dimv) :
                 row = numpy.floor(numpy.zeros((1,v,3)))
 
                 for i in range(0,a - 1) :
-                   pic2 = vstack(row,pic2)
+                   pic2 = numpy.vstack(row,pic2)
 
                 for i in range(0,b-1) :
-                    pic2 = vstack(pic2,row)
+                    pic2 = numpy.vstack(pic2,row)
 
             if (v < dimv) : # The picture is currently not long enough
                 a = dimv - v
@@ -336,6 +331,8 @@ def main(filename) :
     print("\nOpening "+str(filename)+"...\n")
 
     spectrogram = openf(filename)
+
+    #spectrogram.show()
 
     print("Optimizing the spectrogram...\n")
     
