@@ -5,7 +5,7 @@
 
 import sys, os, numpy
 from PIL import Image
-from math import ceil
+from math import floor
 from scipy import signal
 
 
@@ -30,7 +30,7 @@ def openf(fileName) :
 
 def closef(picture) :
 
-    if (type(picture) == Image) :
+    if isinstance(picture, Image.Image) :
         picture.close()
     else :
         print("Wrong Type - Fatal Error.\n")
@@ -76,7 +76,7 @@ def norm(picture) :
                 if (picture[i,j] >= pmax) :
                     pmax = picture[i,j]
 
-        alpha = ceil(255/(pmax - pmin))
+        alpha = floor(255/(pmax - pmin))
         beta = pmin - 1
 
         for i in range(0,h-1) :
@@ -92,6 +92,25 @@ def norm(picture) :
         sys.exit()
         return
 
+
+
+
+# This function uses a lowpass filter to limitate possible noise
+
+def denoise(picture) :
+
+    f = numpy.array([[1, 0, 1],
+                     [1, 1, 1],
+                     [1, 0, 1]])/7
+
+    if isinstance(picture, numpy.ndarray) :
+        pic2 = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same')
+        pic2 = numpy.floor(pic2)
+        return pic2
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
 
 
 
@@ -116,7 +135,7 @@ def hgrad(picture) :
             tmp = 0
             for j in range(0,v-1) :
                 tmp = tmp + grad[j,i]
-            grad2.append(abs(ceil(tmp/v)))
+            grad2.append(abs(floor(tmp/v)))
 
         #grad2.append(0)
         #print(grad2)
@@ -193,15 +212,16 @@ def split(picture, grad) :
                 if (j < len(end)) :
                     b = min(end[j]+m,h)
                 i = i+1
-                name = "tmp/signal"+str(j)
+                name = "tmp/"+str(i+j)+"_signal"
             else :
                 if (i < len(start)) :
                     b = max(start[i]+m,0)
                 j = j+1
-                name = "tmp/silence"+str(i)
+                name = "tmp/"+str(i+j)+"_silence"
 
             signal = not signal
-            pic2.save(name+'.jpg')
+            name = name+".jpg"
+            pic2.save(name)
             files.append(name)
 
         return files
@@ -217,7 +237,6 @@ def split(picture, grad) :
 # This functions does zero padding to a given picture
 
 def padding(files,dimh,dimv) :
-
     
     for elt in range(0,len(files)-1) :
         if (os.path.exists(files[elt])) :
@@ -229,10 +248,10 @@ def padding(files,dimh,dimv) :
 
             if (h < dimh) :
                 a = dimh - h
-                b = ceil(a/2)
+                b = floor(a/2)
                 a = a - b
 
-                row = ceil(numpy.zeros((1,v,3)))
+                row = numpy.floor(numpy.zeros((1,v,3)))
 
                 for i in range(0,a - 1) :
                    pic2 = vstack(row,pic2)
@@ -242,10 +261,10 @@ def padding(files,dimh,dimv) :
 
             if (v < dimv) :
                 a = dimv - v
-                b = ceil(a/2)
+                b = floor(a/2)
                 a = a - b
 
-                col = ceil(numpy.zeros((h,1,3)))
+                col = numpy.floor(numpy.zeros((h,1,3)))
 
                 for i in range(0,a-1) :
                     pic2 = hstack(col,pic2)
@@ -254,7 +273,7 @@ def padding(files,dimh,dimv) :
                     pic2 = hstack(pic2,col)
 
 
-            pic = Image.fromarray(pic2,'L')
+            pic = Image.fromarray(pic2,'RGB')
             pic.save(files[elt])
 
 
@@ -282,6 +301,7 @@ def main(filename) :
     
     spectrogram2 = BW(spectrogram)
     spectrogram2 = norm(spectrogram2)
+    spectrogram2 = denoise(spectrogram2)
 
     print("Detecting signals...\n")
     
