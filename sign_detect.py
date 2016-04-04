@@ -174,22 +174,54 @@ def split(picture, grad) :
         tmp = grad[0]-grad[1]
         start = list()
         end = list()
-        completed = True
 
+        for i in range(0,len(grad)-1) :
+            if abs(tmp) > 40 :
+                if (len(start) != len(end)) : # End
+                    end.append(i)
+                else : # Start
+                    if (len(end) != 0 and i - end[len(end)-1] < 5) :
+                        end.pop()
+                    else :
+                        start.append(i)
+
+            tmp = -tmp + grad[i-1] - grad[i+1]
+        
+        print(start)
+        print(end)
+        print(h,v)
+
+        """
+        v,h = spectrogram.shape[0],spectrogram.shape[1]
+        tmp = grad[0]-grad[1]
+        start = list()
+        end = list()
+        completed = True
+        keepOn = False
+
+        
         for i in range(0,len(grad)-1) : # We decide when a signal starts and ends
             if (abs(tmp) > 40) :
+                print(i,completed,keepOn)
                 if completed :
-                    start.append(i)
+                    if (len(end) != 0 and end[len(end)-1] - i < 10) : # If the start is less than 10 pixels away from the last end, we decide it is in fact part of the same signal and we keep on
+                        keepOn = True
+                    else :
+                        keepOn = False
+                        start.append(i) # It is really two distinct signals
                     completed = False
                 else :
-                    end.append(i)
+                    if keepOn :
+                        end[max(0,len(end)-1)] = i # We update the end of the signal
+                    else :
+                        end.append(i) # We store the end of this new signal
                     completed = True
 
             tmp = -tmp + grad[i-1] - grad[i+1]
+        """
 
 
-
-        m = 20 # marge in pixels around a given signal
+        m = 10 # marge in pixels around a given signal
         a = 0
         b = max(start[0]-m,0)
         if (a == b) :
@@ -202,7 +234,7 @@ def split(picture, grad) :
         #print(start)
         #print(end)
 
-        for k in range(0,2*len(start)-1) : # We actually split the original image according to the horizontal gradient calculated on the Black&White copy
+        for k in range(0,2*len(start)) : # We actually split the original image according to the horizontal gradient calculated on the Black&White copy
             #print(a,b,spectrogram.shape[1])
             pic = spectrogram[0:v-1:1,a:b:1]
             #print(spectrogram.shape)
@@ -213,17 +245,23 @@ def split(picture, grad) :
                 if (j < len(end)) :
                     b = min(end[j]+m,h)
                 i = i+1
-                name = "tmp/"+str(i+j)+"_signal"
+                name = "tmp/"+str(i+j-2)+"_signal"
             else :
                 if (i < len(start)) :
                     b = max(start[i]+m,0)
                 j = j+1
-                name = "tmp/"+str(i+j)+"_silence"
+                name = "tmp/"+str(i+j-2)+"_silence"
 
             signal = not signal
             name = name+".jpg"
             pic2.save(name)
             files.append(name) # We save those images in the "tmp/" folder
+
+
+        pic2 = Image.fromarray(spectrogram[0:v-1:1,a:h-1:1],'RGB')
+        name = "tmp/"+str(i+j-1)+"_silence.jpg"
+        pic2.save(name)
+        files.append(name)
 
         return files
 
