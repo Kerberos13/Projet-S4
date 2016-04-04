@@ -3,6 +3,8 @@
 # The aim of this module is to analyse a spectrogram and split it into several pictures according to the presence or not of a signal.
 # All of thoses pictures will be saved in a tmp folder and re-used later to rebuild the original image.
 
+# This module should be launched either by the following command "python sign_detect.py <filePath>" or by calling its main function in another module as follow "sign_detect.main(<filePath>)"
+
 import sys, os, numpy
 from PIL import Image
 from math import floor
@@ -13,9 +15,8 @@ from scipy import signal
 
 def openf(fileName) :
 
-    if (os.path.exists(fileName)) : 
+    if (os.path.exists(fileName)) : # We verify that the path is correct
         spectrogram = Image.open(fileName)
-        #print(isinstance(spectrogram,Image.Image))
         return spectrogram
 
     else :
@@ -30,7 +31,7 @@ def openf(fileName) :
 
 def closef(picture) :
 
-    if isinstance(picture, Image.Image) :
+    if isinstance(picture, Image.Image) : # We verify that we effectively are working on an Image object
         picture.close()
     else :
         print("Wrong Type - Fatal Error.\n")
@@ -45,7 +46,7 @@ def closef(picture) :
 
 def BW(picture) :
 
-    if isinstance(picture,Image.Image) :
+    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
         picture = picture.convert('L')
         return picture
 
@@ -60,16 +61,16 @@ def BW(picture) :
 
 def norm(picture) :
 
-    if isinstance(picture,Image.Image) :
+    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
 
         picture = numpy.asarray(picture)
-        picture.flags.writeable = True
-        h,v = picture.shape[0],picture.shape[1]
+        picture.flags.writeable = True # This makes the picture writeable and not read-only
+        h,v = picture.shape[0],picture.shape[1] # We get the dimensions of the picture: horizontaly and verticaly
 
         pmin = 255
         pmax = 0
 
-        for i in range(0,h-1) :
+        for i in range(0,h-1) : # We look for the minimum and maximum pixel value
             for j in range(0,v-1) :
                 if (picture[i,j] <= pmin) :
                     pmin = picture[i,j]
@@ -79,7 +80,7 @@ def norm(picture) :
         alpha = floor(255/(pmax - pmin))
         beta = pmin - 1
 
-        for i in range(0,h-1) :
+        for i in range(0,h-1) : # And we adjust them to improve overall contrast for edge detection
             for j in range(0,v-1) :
                 picture[i,j] = picture[i,j]*alpha + beta 
 
@@ -101,11 +102,11 @@ def denoise(picture) :
 
     f = numpy.array([[1, 0, 1],
                      [1, 1, 1],
-                     [1, 0, 1]])/7
+                     [1, 0, 1]])/7 # We use a classical lowpass filter along the horizontal axis
 
-    if isinstance(picture, numpy.ndarray) :
-        pic2 = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same')
-        pic2 = numpy.floor(pic2)
+    if isinstance(picture, numpy.ndarray) : # We verify that we effectively are working on a numpy.ndarray object
+        pic2 = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same') # We compute the matrix convolution
+        pic2 = numpy.floor(pic2) # We make sure that we end up with natural integers
         return pic2
     else :
         print("Wrong Type - Fatal Error.\n")
@@ -121,11 +122,11 @@ def hgrad(picture) :
 
     f = numpy.array([[-1, 0, +1],
                      [-1, 0, +1],
-                     [-1, 0, +1]])
+                     [-1, 0, +1]]) # We use a classical gradient filter along the horizontal axis
 
-    if isinstance(picture, numpy.ndarray) :
+    if isinstance(picture, numpy.ndarray) : # We verify that we effectively are working on a numpy.ndarray object
 
-        grad = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same')
+        grad = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same') # We compute the matrix convolution
         #print(picture.shape)
 
         v,h = grad.shape[0],grad.shape[1]
@@ -135,7 +136,7 @@ def hgrad(picture) :
             tmp = 0
             for j in range(0,v-1) :
                 tmp = tmp + grad[j,i]
-            grad2.append(abs(floor(tmp/v)))
+            grad2.append(abs(floor(tmp/v))) # We compute the mean of the gradient along the vertical axis and make sure that we end up with natural integers
 
         #grad2.append(0)
         #print(grad2)
@@ -155,15 +156,15 @@ def hgrad(picture) :
 
 def split(picture, grad) :
 
-    if (os.path.exists("tmp/") == False) :
+    if (os.path.exists("tmp/") == False) : # We create the folder if it does not exist yet
         os.mkdir('tmp')
 
-    files = os.listdir("tmp/")
+    files = os.listdir("tmp/") # We eras any existing file in the "tmp/" folder as they are supposed to be temporary
     for f in files :
         os.remove("tmp/"+str(f))
 
 
-    if isinstance(picture,Image.Image) :
+    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
         
         files = list()
 
@@ -175,7 +176,7 @@ def split(picture, grad) :
         end = list()
         completed = True
 
-        for i in range(0,len(grad)-1) :
+        for i in range(0,len(grad)-1) : # We decide when a signal starts and ends
             if (abs(tmp) > 40) :
                 if completed :
                     start.append(i)
@@ -201,7 +202,7 @@ def split(picture, grad) :
         #print(start)
         #print(end)
 
-        for k in range(0,2*len(start)-1) :
+        for k in range(0,2*len(start)-1) : # We actually split the original image according to the horizontal gradient calculated on the Black&White copy
             #print(a,b,spectrogram.shape[1])
             pic = spectrogram[0:v-1:1,a:b:1]
             #print(spectrogram.shape)
@@ -222,7 +223,7 @@ def split(picture, grad) :
             signal = not signal
             name = name+".jpg"
             pic2.save(name)
-            files.append(name)
+            files.append(name) # We save those images in the "tmp/" folder
 
         return files
 
@@ -239,14 +240,14 @@ def split(picture, grad) :
 def padding(files,dimh,dimv) :
     
     for elt in range(0,len(files)-1) :
-        if (os.path.exists(files[elt])) :
+        if (os.path.exists(files[elt])) : # We verify that the path is correct
             pic = openf(files[elt])
 
             pic2 = numpy.asarray(pic)
             closef(pic)
             h,v = pic2.shape[0],pic2.shape[1]
 
-            if (h < dimh) :
+            if (h < dimh) : # The picture is currently not wide enough
                 a = dimh - h
                 b = floor(a/2)
                 a = a - b
@@ -259,7 +260,7 @@ def padding(files,dimh,dimv) :
                 for i in range(0,b-1) :
                     pic2 = vstack(pic2,row)
 
-            if (v < dimv) :
+            if (v < dimv) : # The picture is currently not long enough
                 a = dimv - v
                 b = floor(a/2)
                 a = a - b
@@ -274,8 +275,9 @@ def padding(files,dimh,dimv) :
 
 
             pic = Image.fromarray(pic2,'RGB')
-            pic.save(files[elt])
+            pic.save(files[elt]) # We save the resulting files over the originals
 
+            # Note: we do not do anything if the picutre is too big. The crop will have to be handled by the second module.
 
         else :
             print("Wrong Path - Fatal Error.\n")
