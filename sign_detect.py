@@ -100,9 +100,9 @@ def norm(picture) :
 
 def denoise(picture) :
 
-    f = numpy.array([[1, 0, 1],
-                     [1, 1, 1],
-                     [1, 0, 1]])/7 # We use a classical lowpass filter along the horizontal axis
+    f = numpy.array([[1, 2, 0, 2, 1],
+                     [1, 2, 2, 2, 1],
+                     [1, 2, 0, 2, 1]])/20 # We use a classical lowpass filter along the horizontal axis
 
     if isinstance(picture, numpy.ndarray) : # We verify that we effectively are working on a numpy.ndarray object
         pic2 = signal.convolve2d(picture, f, boundary = 'symm', mode = 'same') # We compute the matrix convolution
@@ -330,6 +330,6 @@ if __name__ == "__main__" :
     if(len(sys.argv)) > 1 :
         main(str(sys.argv[1]))
     else :
-        print("\nMissing arguments - Fatal Error.\n")
+        print("\nInput argument missing - Fatal Error.\n")
 
 
