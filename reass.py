@@ -61,11 +61,11 @@ def box(picture, color, size) : # Color is a list of the RGB components, size is
 
     picture.flags.writeable = True
 
-    for i in [0,1,2] : # Need to check first two corrdinates...
-        picture[0:h-1:1,0:size:1,i] = color[i]
-        picture[0:h-1:1,v-1-size:v-1:1,i] = color[i]
-        picture[0:size:1,0:v-1:1,i] = color[i]
-        picture[h-1-size:h-1:1,0:v-1:1,i] = color[i]
+    for i in [0,1,2] : # Need to check first two coordinates...
+        picture[0:v-1:1,0:size:1,i] = color[i]
+        picture[0:v-1:1,h-1-size:h-1:1,i] = color[i]
+        picture[0:size:1,0:h-1:1,i] = color[i]
+        picture[v-1-size:v-1:1,0:h-1:1,i] = color[i]
         
     return picture
 
@@ -126,16 +126,15 @@ def main(labels) :
     print("Merging files...\n")
 
     color = [120,120,250]
-    size = 3
+    size = 4
 
     i = 0
     j = 0
-    for elt in files : # WARNING: is order really conserved?
+    for elt in files :
         
         i = i+1
 
         print("Processing part "+str(i)+"/"+str(len(files))+"...")
-        print(elt)
         picture = openf("tmp/"+str(elt))
         picture2 = unpad(picture)
         if (elt[len(elt)-1-9:] == "signal.jpg") :
