@@ -5,7 +5,7 @@
 
 import sys
 
-import sign_detect,reass
+import sign_detect2,reass
 
 
 
@@ -13,9 +13,14 @@ import sign_detect,reass
 
 def main(filepath) :
 
-    sign_detect.main(filepath) # Detection of signals on the spectrogram
+    margin = 12
+    size = 6
+    color = [120,120,255]
+    threshold = 4
 
-    reass.main(list()) # Reassembly of the different parts for a labeled spectrogram
+    sign_detect2.main(filepath,margin,threshold) # Detection of signals on the spectrogram
+
+    reass.main(list(),margin,size,color) # Reassembly of the different parts for a labeled spectrogram
 
     return
 
