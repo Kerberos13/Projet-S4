@@ -123,7 +123,7 @@ def main(labels, margin, size, color) :
         labels = str("Unknown,"*nbSignals).split(",")
 
     print("Merging files...\n")
-    printC("Mergine files...\n")
+    printC("Merging files...\n")
 
     i = 0
     j = 0
@@ -147,7 +147,8 @@ def main(labels, margin, size, color) :
         closef(picture)
 
     print("\nCleaning tmp folder...\n")
-    printC("\n Cleaning tmp folder...\n")
+    printC("\n")
+    printC("Cleaning tmp folder...\n")
 
     clean(files)
 

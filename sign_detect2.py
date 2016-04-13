@@ -367,7 +367,8 @@ def main(filename,margin,threshold) :
     dimv = 0;
 
     print("\nOpening "+str(filename)+"...\n")
-    printC("\nOpening "+str(filename)+"...\n")
+    printC("\n")
+    printC("Opening "+str(filename)+"...\n")
 
     spectrogram = openf(filename)
 
