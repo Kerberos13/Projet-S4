@@ -161,7 +161,6 @@ def main(labels, margin, size, color) :
     print("Done.\n")
     printC("Done.\n")
 
-    sys.exit()
 
     return
 

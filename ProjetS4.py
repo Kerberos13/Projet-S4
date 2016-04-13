@@ -12,10 +12,14 @@ class Script(Thread) :
     def __init__(self,picture) :
         Thread.__init__(self)
         self.picture = picture
+        self.threshold = 3
+        self.margin = 10
+        self.size = 5
+        self.color = [120,120,250]
         return
 
     def run(self) :
-        main.main(self.picture)
+        main.main(self.picture, self.threshold, self.margin, self.size, self.color)
         return
 
 
@@ -32,7 +36,7 @@ class Gui(Thread) :
         gui.launchApp(self.picture)
         print(thread1.is_alive())
         if not thread1.is_alive() :
-            gui.disp_pic(interf,"tmp/spectrogram.jpg")
+            gui.disp_pic("tmp/spectrogram.jpg")
         return
 
 
@@ -42,8 +46,12 @@ pic = "spectrograms/HF_3700_details2.jpg"
 
 
 
-def compute(picture) :
+def compute(picture, threshold, margin, size, color) :
     thread1.picture = picture
+    thread1.threshold = threshold
+    thread1.margin = margin
+    thread1.size = size
+    thread1.color = color
     thread1.start()
     return
 

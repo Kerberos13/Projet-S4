@@ -5,43 +5,50 @@
 import os
 from tkinter import *
 from PIL import Image, ImageTk
-import ProjetS4 #,main
+import ProjetS4
 from tkinter.ttk import *
+
+
 
 class Interface(Frame) :
 
     def __init__(self, window, **kwargs) :
+        
+        # Window Background
         Frame.__init__(self, window, width=768, height=576, **kwargs)
         self.pack(fill = BOTH)
 
+
+        # Greetings message
         self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!")
         self.message.grid(row=1,column=2,pady=5)
 
 
+        # Quit Button
         self.Oquit_button = Button(self, text="Quit", command=self.quit)
         self.Oquit_button.grid(row=7,column=5,pady=2,padx=2)
 
 
+        # Compute Button
         self.Ocompute_button = Button(self, text="Compute", command=self.compute)
         self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
 
 
-        #self.Oupdate_button = Button(self,text="Update",command = self.setImage("tmp/spectrogram.jpg"))
-        #self.Oupdate_button.grid(row=4,column=5)
-
-
+        # Spectrogram Image
         self.Oimage = ImageTk.PhotoImage(Image.open("spectrograms/HF_3700_details2.jpg").resize((700,500),Image.ANTIALIAS))
-
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=2)
        
-        
+
+        # Threshold       
         self.threshold = 3
         self.Lthreshold = Label(self,text="Threshold")
         self.Lthreshold.grid(row=6,column=1,padx=2,sticky=S)
         self.Othreshold = Spinbox(self, from_=2, to=5, increment=0.5)
         self.Othreshold.grid(row=7,column=1,padx=2)
 
+
+        # Margin
         self.margin = 12
         self.Lmargin = Label(self,text="Margin")
         self.Lmargin.grid(row=6,column=2,padx=2,sticky=S)
@@ -49,6 +56,7 @@ class Interface(Frame) :
         self.Omargin.grid(row=7,column=2,padx=2)
 
 
+        # Box Width
         self.boxWidth = 6
         self.LboxWidth = Label(self,text="Box Width")
         self.LboxWidth.grid(row=6,column=3,padx=2,sticky=S)
@@ -56,30 +64,25 @@ class Interface(Frame) :
         self.OboxWidth.grid(row=7, column=3,padx=2)
 
 
+        # Box Color
         self.color = [120,120,250]
         self.Lcolor = Label(self, text="Box Color")
         self.Lcolor.grid(row=6, column=4,padx=2,sticky=S)
-        #self.Ocolor = Listbox(self)
         self.Ocolor = Combobox(self)
         self.Ocolor.grid(row=7, column=4,padx=2)
-        """
-        for elt in ["blue","purple","red","orange","yellow","green","white","black"] :
-            self.Ocolor.insert(END,elt)
-        """
         self.Ocolor['values'] = ["blue","purple","red","orange","yellow","green","white","black"]
 
+
+        # Spectrogram
         self.file = "spectrograms/HF_3700_details2.jpg"
         self.Lfile = Label(self, text = "Select a file")
         self.Lfile.grid(row=2,column=4)
-        #self.Ofile = Listbox(self)
         self.Ofile = Combobox(self)
         self.Ofile.grid(row=3,column=4)
-        """
-        for elt in os.listdir("spectrograms/") :
-            self.Ofile.insert(END,elt)
-        """
         self.Ofile['values'] = os.listdir("spectrograms/")
 
+
+        # Console-like messages
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
         self.Oconsole.grid(row=4,column=3,sticky=N,columnspan=2)
@@ -116,10 +119,11 @@ class Interface(Frame) :
             self.color = [120,120,250]
 
         #self.file = str(self.Ofile.get())
-        self.file = str(self.Ofile.get())
+        if len(str(self.Ofile.get())) != 0 :
+            self.file = "spectrograms/"+str(self.Ofile.get())
+        
 
-        ProjetS4.compute("spectrograms/HF_3700_details2.jpg")
-        #main.main("spectrograms/HF_3700_details2.jpg")
+        ProjetS4.compute(self.file, self.threshold, self.margin, self.boxWidth, self.color)
 
         return
 
@@ -160,10 +164,9 @@ def printOnConsole(text) :
 
 
 
-def disp_pic(interf,picture) :
+def disp_pic(picture) :
 
     interf.setImage(picture)
-    #printOnConsole(,"UPDATE")
     interf.update()
     return
 
@@ -187,5 +190,3 @@ def launchApp(picture) :
     return
 
 
-
-#launchApp("spectrogram/HF_3700_details2.jpg")
