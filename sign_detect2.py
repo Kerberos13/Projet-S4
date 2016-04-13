@@ -9,6 +9,7 @@ import sys, os, numpy
 from PIL import Image
 from math import floor
 from scipy import signal
+from gui import printOnConsole as printC
 
 
 # This function opens an existing spectrogram
@@ -57,7 +58,21 @@ def BW(picture) :
 
 
 
-# This function normalises the pixels' value from 0 to 255 from a picture
+
+
+# This functions crops the original picture to get rid of the white frame around the spectrogram in itself
+# Note : one possibility would be to save the frame in order to remerge it with the final image later
+
+def crop(picture) :
+
+
+    return picture
+
+
+
+
+
+# This function normalises the pixels' value from 1 to 255 from a picture - We want 0 to be reserved for the zero-padding
 
 def norm2(picture) :
 
@@ -78,10 +93,9 @@ def norm2(picture) :
                 if (picture[i,j] >= pmax) :
                     pmax = picture[i,j]
 
-        if(pmin != 0 and pmax != 1) :
+        if(pmin != 1 and pmax != 255) :
             alpha = floor(255/(pmax - pmin))
             beta = pmin
-            print(pmin,pmax,alpha,beta)
 
             for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
                 for j in range(0,v) :
@@ -211,12 +225,12 @@ def hgrad1(vec) :
 
 # This function splits the spectrogram into different parts
 
-def split1(picture,mean,margin,threshold) :
+def split1(picture,mean,margin,threshold) : # picture must be an Image object, mean must be a list, margin an integer and threshold a float (or an integer)
 
     if (os.path.exists("tmp/") == False) : # We create the folder if it does not exist yet
         os.mkdir('tmp')
 
-    files = os.listdir("tmp/") # We eras any existing file in the "tmp/" folder as they are supposed to be temporary
+    files = os.listdir("tmp/") # We erase any existing file in the "tmp/" folder as they are supposed to be temporary
     for f in files :
         os.remove("tmp/"+str(f))
 
@@ -288,6 +302,10 @@ def split1(picture,mean,margin,threshold) :
 
 
 
+
+
+
+
 # This functions does zero padding to a given picture
 
 def padding(files,dimh,dimv) :
@@ -349,30 +367,37 @@ def main(filename,margin,threshold) :
     dimv = 0;
 
     print("\nOpening "+str(filename)+"...\n")
+    printC("\nOpening "+str(filename)+"...\n")
 
     spectrogram = openf(filename)
 
     print("Optimizing the spectrogram...\n")
+    printC("Optimizing the spectrogram...\n")
     
     spectrogram2 = BW(spectrogram)
     spectrogram2 = numpy.asarray(spectrogram2)
     spec = vec(spectrogram2)
     spec = norm1(spec,"inv")
     spec = denoise1(spec)
+    #print(spec)
 
     print("Detecting signals...\n")
+    printC("Detecting signals...\n")
     
     files = split1(spectrogram, spec, margin, threshold)
 
     print("Optimizing signals...\n")
+    printC("Optimizing signals...\n")
 
     padding(files,dimh,dimv)
 
     print("Closing "+str(filename)+"...\n")
+    printC("Closing "+str(filename)+"...\n")
 
     closef(spectrogram)
 
     print("Done.\n")
+    printC("Done.\n")
 
     return
 

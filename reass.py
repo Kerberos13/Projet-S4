@@ -7,7 +7,7 @@
 
 from PIL import Image
 import numpy, os, sys
-
+from gui import printOnConsole as printC
 
 
 # This function opens an existing spectrogram
@@ -123,6 +123,7 @@ def main(labels, margin, size, color) :
         labels = str("Unknown,"*nbSignals).split(",")
 
     print("Merging files...\n")
+    printC("Mergine files...\n")
 
     i = 0
     j = 0
@@ -131,6 +132,7 @@ def main(labels, margin, size, color) :
         i = i+1
 
         print("Processing part "+str(i)+"/"+str(len(files))+"...")
+        printC("Processing part "+str(i)+"/"+str(len(files))+"...")
         picture = openf("tmp/"+str(elt))
         picture2 = numpy.asarray(picture)
         if (elt[len(elt)-1-9:] == "signal.jpg") :
@@ -145,15 +147,18 @@ def main(labels, margin, size, color) :
         closef(picture)
 
     print("\nCleaning tmp folder...\n")
+    printC("\n Cleaning tmp folder...\n")
 
     clean(files)
 
     print("Saving final spectrogram...\n")
+    printC("Saving final spectrogram...\n")
 
     pic = Image.fromarray(pic,'RGB')
     pic.save("tmp/spectrogram.jpg")
 
     print("Done.\n")
+    printC("Done.\n")
 
     sys.exit()
 
