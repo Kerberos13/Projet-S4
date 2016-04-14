@@ -27,12 +27,11 @@ def main(filepath, threshold, margin, boxSize, color, gui) :
     """
     if os.path.exists("tmp/spectrogram.jpg") :
         gui.disp_pic("tmp/spectrogram.jpg")
-        print("UPDATE")
     else :
         print("Fatal Error.\n")
     """
 
-    sys.exit()
+    #sys.exit()
 
     return
 

@@ -129,18 +129,13 @@ class Interface(Frame) :
 
 
 
-
     def setImage(self,picture) :
-
-        """
-        img2 = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
-        self.Oimage = img2
-        self.Opic.configure(image = self.Oimage)
-        self.Opic.update()
-        #self.Opic.grid(row=2,column=2)
-        """
-
+        self.Opic.destroy()
+        self.Oimage = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
+        self.Opic = Label(self,image=self.Oimage)
+        self.Opic.grid(row=4,column=2)
         return
+
 
 
     def printConsole(self,text) :
@@ -156,6 +151,14 @@ class Interface(Frame) :
         return
 
 
+    def clean(self) :
+        self.Oconsole.destroy()
+        self.console = ""
+        self.Oconsole = Label(self,text=self.console,width=40)
+        self.Oconsole.grid(row=4,column=3,sticky=N,columnspan=2)
+        return
+
+
 
 def printOnConsole(text) :
     interf.printConsole(text)
@@ -165,11 +168,15 @@ def printOnConsole(text) :
 
 
 def disp_pic(picture) :
-
     interf.setImage(picture)
     interf.update()
     return
 
+
+def clean() :
+    interf.clean()
+    interf.update()
+    return
 
 
 
@@ -183,7 +190,7 @@ def launchApp(picture) :
     #tkimage = ImageTk.PhotoImage(Image.open(interface.image))
     #Label(interface, image=tkimage).pack(side=TOP)
 
-    printOnConsole("Starting...")
+    printOnConsole("Waiting for instructions...")
 
     interf.mainloop()
     #interf.destroy()
