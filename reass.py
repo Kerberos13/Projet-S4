@@ -7,7 +7,18 @@
 
 from PIL import Image
 import numpy, os, sys
-from gui import printOnConsole as printC
+from gui import printOnConsole
+
+
+# This function displays text on a console like interface if the GUI is started
+
+def printC(text,gui) :
+    if gui :
+        printOnConsole(text)
+        return
+    else :
+        return
+
 
 
 # This function opens an existing spectrogram
@@ -109,7 +120,7 @@ def clean(files) :
 
 # This is the main function that brings it all together
 
-def main(labels, margin, size, color) :
+def main(labels, margin, size, color,gui) :
 
     files = os.listdir("tmp/")
     files.sort()
@@ -123,7 +134,7 @@ def main(labels, margin, size, color) :
         labels = str("Unknown,"*nbSignals).split(",")
 
     print("Merging files...\n")
-    printC("Merging files...\n")
+    printC("Merging files...\n",gui)
 
     i = 0
     j = 0
@@ -132,7 +143,7 @@ def main(labels, margin, size, color) :
         i = i+1
 
         print("Processing part "+str(i)+"/"+str(len(files))+"...")
-        printC("Processing part "+str(i)+"/"+str(len(files))+"...")
+        printC("Processing part "+str(i)+"/"+str(len(files))+"...",gui)
         picture = openf("tmp/"+str(elt))
         picture2 = numpy.asarray(picture)
         if (elt[len(elt)-1-9:] == "signal.jpg") :
@@ -147,19 +158,19 @@ def main(labels, margin, size, color) :
         closef(picture)
 
     print("\nCleaning tmp folder...\n")
-    printC("\n")
-    printC("Cleaning tmp folder...\n")
+    printC("\n",gui)
+    printC("Cleaning tmp folder...\n",gui)
 
     clean(files)
 
     print("Saving final spectrogram...\n")
-    printC("Saving final spectrogram...\n")
+    printC("Saving final spectrogram...\n",gui)
 
     pic = Image.fromarray(pic,'RGB')
     pic.save("tmp/spectrogram.jpg")
 
     print("Done.\n")
-    printC("Done.\n")
+    printC("Done.\n",gui)
 
 
     return
@@ -196,5 +207,10 @@ if __name__ == "__main__" :
     else :
         color = int(sys.argv[4])
         
-    main(labels,margin,size,color)
+    if len(sys.argv) == 5 :
+        gui = sys.argv[4]
+    else :
+        gui = False
+
+    main(labels,margin,size,color,gui)
 

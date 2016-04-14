@@ -19,7 +19,7 @@ class Script(Thread) :
         return
 
     def run(self) :
-        main.main(self.picture, self.threshold, self.margin, self.size, self.color)
+        main.main(self.picture, self.threshold, self.margin, self.size, self.color, True)
         return
 
 
@@ -37,6 +37,7 @@ class Gui(Thread) :
         print(thread1.is_alive())
         if not thread1.is_alive() :
             gui.disp_pic("tmp/spectrogram.jpg")
+        # Need to clean the console display when before starting the calculations
         return
 
 
@@ -47,6 +48,7 @@ pic = "spectrograms/HF_3700_details2.jpg"
 
 
 def compute(picture, threshold, margin, size, color) :
+    thread1 = Script(picture)
     thread1.picture = picture
     thread1.threshold = threshold
     thread1.margin = margin
@@ -56,7 +58,7 @@ def compute(picture, threshold, margin, size, color) :
     return
 
 
-thread1 = Script(pic)
+#thread1 = Script(pic)
 
 thread2 = Gui(pic)
 #interf = thread2.launchApp(pic)

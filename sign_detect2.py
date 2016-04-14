@@ -9,7 +9,18 @@ import sys, os, numpy
 from PIL import Image
 from math import floor
 from scipy import signal
-from gui import printOnConsole as printC
+from gui import printOnConsole
+
+
+
+# This function displays text on a console like interface if the GUI is started
+
+def printC(text,gui) :
+    if gui :
+        printOnConsole(text)
+        return
+    else :
+        return
 
 
 # This function opens an existing spectrogram
@@ -361,19 +372,19 @@ def padding(files,dimh,dimv) :
 
 # This is the main function that brings it all together
 
-def main(filename,margin,threshold) :
+def main(filename,margin,threshold,gui) :
 
     dimh = 0;
     dimv = 0;
 
     print("\nOpening "+str(filename)+"...\n")
-    printC("\n")
-    printC("Opening "+str(filename)+"...\n")
+    printC("\n",gui)
+    printC("Opening "+str(filename)+"...\n",gui)
 
     spectrogram = openf(filename)
 
     print("Optimizing the spectrogram...\n")
-    printC("Optimizing the spectrogram...\n")
+    printC("Optimizing the spectrogram...\n",gui)
     
     spectrogram2 = BW(spectrogram)
     spectrogram2 = numpy.asarray(spectrogram2)
@@ -383,22 +394,22 @@ def main(filename,margin,threshold) :
     #print(spec)
 
     print("Detecting signals...\n")
-    printC("Detecting signals...\n")
+    printC("Detecting signals...\n",gui)
     
     files = split1(spectrogram, spec, margin, threshold)
 
     print("Optimizing signals...\n")
-    printC("Optimizing signals...\n")
+    printC("Optimizing signals...\n",gui)
 
     padding(files,dimh,dimv)
 
     print("Closing "+str(filename)+"...\n")
-    printC("Closing "+str(filename)+"...\n")
+    printC("Closing "+str(filename)+"...\n",gui)
 
     closef(spectrogram)
 
     print("Done.\n")
-    printC("Done.\n")
+    printC("Done.\n",gui)
 
     return
 
@@ -407,15 +418,21 @@ def main(filename,margin,threshold) :
 # This redirects to the main function
 
 if __name__ == "__main__" :
+
+    if len(sys.argv) == 4 :
+        gui = sys.argv[3]
+    else :
+        gui = False
+
     if (len(sys.argv)) > 1 :
-        if (len(sys.arg)) == 2 :
-            print("Threshold value missing - Using default value.\n")
-            main(str(sys.argv[1]),int(argv[2]),4)
         if (len(sys.arg)) == 3 :
-            main(str(sys.argv[1],int(argv[2]),int(argv[3])))
+            print("Threshold value missing - Using default value.\n")
+            main(str(sys.argv[1]),int(argv[2]),4,gui)
+        if (len(sys.arg)) == 4 :
+            main(str(sys.argv[1],int(argv[2]),int(argv[3])),gui)
         else :
             print("\nMargin and threshold value missing - Using default values.\n")
-            main(str(sys.argv[1]),10,4)
+            main(str(sys.argv[1]),10,4,gui)
     else :
         print("\nInput argument missing - Fatal Error.\n")
 
