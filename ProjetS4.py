@@ -33,16 +33,49 @@ class Gui(Thread) :
     def __init__(self,picture) :
         Thread.__init__(self)
         self.picture = picture
+        self.calculationOver = False
         return
+
+
+    def isOver(self) :
+        self.calculationOver = True
+        gui.disp_pic("tmp/spectrogram.jpg")
+        return
+
+
+    def isNotOver(self) :
+        self.calculationIsOver = False
+        return
+
 
     def run(self) :
         gui.launchApp(self.picture)
-        if not thread1.is_alive() :
-            gui.disp_pic("tmp/spectrogram.jpg")
-        
-        # Need to clean the console display before starting the calculations
         return
 
+
+
+# This thread watches the Script thread and communicates with the GUI thread
+
+class Watcher(Thread) :
+
+    def __init__(self,threadToWatch,threadToNotify) :
+        Thread.__init__(self)
+        self.threadToWatch = threadToWatch
+        self.threadToNotify = threadToNotify
+        return
+
+    def run(self) :
+        """
+        while(self.threadToNotify.is_alive()) :
+            if(not self.threadToWatch.is_alive()) :
+                threadToNotify.isOver()
+            else :
+                threadToNotify.isNotOver()
+        """
+        self.threadToNotify.isNotOver()
+        self.threadToWatch.join()
+        self.threadToNotify.isOver()
+        return
 
 
 pic = "spectrograms/HF_3700_details2.jpg"
@@ -58,9 +91,10 @@ def compute(picture, threshold, margin, size, color) : # This launches the calcu
     gui.disp_pic(picture)
     gui.clean()
     thread1.start()
+    thread3 = Watcher(thread1,thread2)
+    thread3.start()
     return
 
 
 thread2 = Gui(pic) # This launches the GUI
 thread2.start()
-

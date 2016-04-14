@@ -31,7 +31,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :
         print("Fatal Error.\n")
     """
 
-    #sys.exit()
+    sys.exit()
 
     return
 

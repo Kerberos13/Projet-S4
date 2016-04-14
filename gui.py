@@ -141,8 +141,8 @@ class Interface(Frame) :
     def printConsole(self,text) :
         self.console = self.console.split("<$>")
         l = len(self.console)
-        if l > 30 :
-            self.console = "<$>".join(self.console[l-1-30:])
+        if l > 25 :
+            self.console = "<$>".join(self.console[l-1-25:])
         else :
             self.console = "<$>".join(self.console)
 

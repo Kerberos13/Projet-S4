@@ -172,7 +172,6 @@ def main(labels, margin, size, color,gui) :
     print("Done.\n")
     printC("Done.\n",gui)
 
-
     return
 
 
