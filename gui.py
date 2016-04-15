@@ -10,7 +10,7 @@ from tkinter.ttk import *
 
 
 
-class Interface(Frame) :
+class Interface(Frame) : # We define our window
 
     def __init__(self, window, **kwargs) :
         
@@ -21,12 +21,12 @@ class Interface(Frame) :
 
         # Greetings message
         self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!")
-        self.message.grid(row=1,column=2,pady=5)
+        self.message.grid(row=1,column=2,pady=5)     # The grid method places a widget in the window; pady is a margin around the widget
 
 
         # Quit Button
-        self.Oquit_button = Button(self, text="Quit", command=self.quit)
-        self.Oquit_button.grid(row=7,column=5,pady=2,padx=2)
+        self.Oquit_button = Button(self, text="Quit", command=self.quit)  # command = self.quit defines the callback function
+        self.Oquit_button.grid(row=7,column=5,pady=2,padx=2)   # padx is a margin around the widget
 
 
         # Compute Button
@@ -35,23 +35,23 @@ class Interface(Frame) :
 
 
         # Spectrogram Image
-        self.Oimage = ImageTk.PhotoImage(Image.open("spectrograms/HF_3700_details2.jpg").resize((700,500),Image.ANTIALIAS))
+        self.Oimage = ImageTk.PhotoImage(Image.open("spectrograms/HF_3700_details2.jpg").resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=2)
        
 
         # Threshold       
-        self.threshold = 3
-        self.Lthreshold = Label(self,text="Threshold")
+        self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
+        self.Lthreshold = Label(self,text="Threshold")                     # self.Lx is the label of the corresponding object
         self.Lthreshold.grid(row=6,column=1,padx=2,sticky=S)
-        self.Othreshold = Spinbox(self, from_=2, to=5, increment=0.5)
+        self.Othreshold = Spinbox(self, from_=2, to=5, increment=0.5)      # self.Ox is the actual object
         self.Othreshold.grid(row=7,column=1,padx=2)
 
 
         # Margin
         self.margin = 12
         self.Lmargin = Label(self,text="Margin")
-        self.Lmargin.grid(row=6,column=2,padx=2,sticky=S)
+        self.Lmargin.grid(row=6,column=2,padx=2,sticky=S)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
         self.Omargin = Spinbox(self, from_=5, to = 20, increment = 5)
         self.Omargin.grid(row=7,column=2,padx=2)
 
@@ -65,7 +65,7 @@ class Interface(Frame) :
 
 
         # Box Color
-        self.color = [120,120,250]
+        self.color = [120,120,250] # RGB
         self.Lcolor = Label(self, text="Box Color")
         self.Lcolor.grid(row=6, column=4,padx=2,sticky=S)
         self.Ocolor = Combobox(self)
@@ -92,7 +92,7 @@ class Interface(Frame) :
 
 
 
-    def compute(self) :
+    def compute(self) : # This function gets all parameters and launches the computation
 
         self.threshold = int(float(self.Othreshold.get()))
         self.margin = int(float(self.Omargin.get()))
@@ -129,7 +129,7 @@ class Interface(Frame) :
 
 
 
-    def setImage(self,picture) :
+    def setImage(self,picture) : # This function updates the displayed image by replacing the old widget
         self.Opic.destroy()
         self.Oimage = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
         self.Opic = Label(self,image=self.Oimage)
@@ -138,10 +138,10 @@ class Interface(Frame) :
 
 
 
-    def printConsole(self,text) :
+    def printConsole(self,text) : # This function allows to print console-like messages in a label, on the window
         self.console = self.console.split("<$>")
         l = len(self.console)
-        if l > 25 :
+        if l > 25 : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
             self.console = "<$>".join(self.console[l-1-25:])
         else :
             self.console = "<$>".join(self.console)
@@ -151,7 +151,7 @@ class Interface(Frame) :
         return
 
 
-    def clean(self) :
+    def clean(self) :   # This cleans the console-like display
         self.Oconsole.destroy()
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
@@ -160,20 +160,20 @@ class Interface(Frame) :
 
 
 
-def printOnConsole(text) :
+def printOnConsole(text) : # Prints the text in the window
     interf.printConsole(text)
     return
 
 
 
 
-def disp_pic(picture) :
+def disp_pic(picture) : # Displays a picture in the window
     interf.setImage(picture)
     interf.update()
     return
 
 
-def clean() :
+def clean() : # Cleans the console in the window
     interf.clean()
     interf.update()
     return
@@ -181,7 +181,7 @@ def clean() :
 
 
 
-def launchApp(picture) :
+def launchApp(picture) : # Launches the GUI
 
     window = Tk()
     global interf

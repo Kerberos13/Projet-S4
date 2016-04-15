@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # The aim of this module is to bring together the python script and its GUI
-
+# Because we want the GUI to work as the computation goes, we need to create several threads
 
 import main,gui
 from threading import Thread
@@ -37,13 +37,13 @@ class Gui(Thread) :
         return
 
 
-    def isOver(self) :
+    def isOver(self) : # Calculation is over
         self.calculationOver = True
         gui.disp_pic("tmp/spectrogram.jpg")
         return
 
 
-    def isNotOver(self) :
+    def isNotOver(self) : # Calculation is not over
         self.calculationIsOver = False
         return
 
