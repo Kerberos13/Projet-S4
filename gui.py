@@ -12,8 +12,8 @@ from tkinter.ttk import *
 
 class Interface(Frame) : # We define our window
 
-    def __init__(self, window, **kwargs) :
-        
+    def __init__(self, window, picture, **kwargs) :
+       
         # Window Background
         Frame.__init__(self, window, width=768, height=576, **kwargs)
         self.pack(fill = BOTH)
@@ -34,8 +34,16 @@ class Interface(Frame) : # We define our window
         self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
 
 
+        # Cancel flag
+        self.cancel = False
+
+
         # Spectrogram Image
-        self.Oimage = ImageTk.PhotoImage(Image.open("spectrograms/HF_3700_details2.jpg").resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
+        if os.path.exists(picture) :
+            self.image = str(picture)
+        else :
+            self.image = "spectrograms/HF_3700_details2.jpg"
+        self.Oimage = ImageTk.PhotoImage(Image.open(self.image).resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=2)
        
@@ -44,7 +52,7 @@ class Interface(Frame) : # We define our window
         self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
         self.Lthreshold = Label(self,text="Threshold")                     # self.Lx is the label of the corresponding object
         self.Lthreshold.grid(row=6,column=1,padx=2,sticky=S)
-        self.Othreshold = Spinbox(self, from_=2, to=5, increment=0.5)      # self.Ox is the actual object
+        self.Othreshold = Spinbox(self, from_=2.5, to=5, increment=0.5)    # self.Ox is the actual object
         self.Othreshold.grid(row=7,column=1,padx=2)
 
 
@@ -60,8 +68,8 @@ class Interface(Frame) : # We define our window
         self.boxWidth = 6
         self.LboxWidth = Label(self,text="Box Width")
         self.LboxWidth.grid(row=6,column=3,padx=2,sticky=S)
-        self.OboxWidth = Spinbox(self, from_=2, to=10, increment = 2)
-        self.OboxWidth.grid(row=7, column=3,padx=2)
+        self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2)
+        self.OboxWidth.grid(row=7, column=3, padx=2, sticky=W)
 
 
         # Box Color
@@ -97,14 +105,13 @@ class Interface(Frame) : # We define our window
         self.threshold = int(float(self.Othreshold.get()))
         self.margin = int(float(self.Omargin.get()))
         self.boxWidth = int(float(self.OboxWidth.get()))
-        #self.color = int(float(self.Ocolor.get().split(",")))
         tmp = str(self.Ocolor.get())
         if tmp == "blue" :
             self.color = [120,120,250]
         elif tmp == "red" :
-            self.color = [250,120,120]
+            self.color = [250,60,60]
         elif tmp == "green" :
-            self.color = [120,250,120]
+            self.color = [60,250,120]
         elif tmp == "yellow" :
             self.color = [250,250,60]
         elif tmp == "orange" :
@@ -116,14 +123,15 @@ class Interface(Frame) : # We define our window
         elif tmp == "black" :
             self.color = [5,5,5]
         else :
-            self.color = [120,120,250]
+            self.color = [120,120,250] # Default color is blue
 
-        #self.file = str(self.Ofile.get())
         if len(str(self.Ofile.get())) != 0 :
             self.file = "spectrograms/"+str(self.Ofile.get())
-        
+            ProjetS4.compute(self.file, self.threshold, self.margin, self.boxWidth, self.color)
+        else :
+            self.printConsole("Error: No file selected.")
 
-        ProjetS4.compute(self.file, self.threshold, self.margin, self.boxWidth, self.color)
+        self.cancel = False
 
         return
 
@@ -141,8 +149,8 @@ class Interface(Frame) : # We define our window
     def printConsole(self,text) : # This function allows to print console-like messages in a label, on the window
         self.console = self.console.split("<$>")
         l = len(self.console)
-        if l > 25 : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
-            self.console = "<$>".join(self.console[l-1-25:])
+        if l > 30 : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
+            self.console = "<$>".join(self.console[l-1-30:])
         else :
             self.console = "<$>".join(self.console)
 
@@ -159,17 +167,41 @@ class Interface(Frame) : # We define our window
         return
 
 
+    def switchToCancel(self) : # Switches the compute button to a cancel button
+        self.Ocompute_button.destroy()
+        self.Ocompute_button = Button(self, text="Cancel", command=self.canceling)
+        self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
+        return
+
+
+    def switchToCompute(self) : # Switches the cancel button to a compute button
+        self.Ocompute_button.destroy()
+        self.Ocompute_button = Button(self, text="Compute", command=self.compute)
+        self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
+        return
+
+
+    def canceling(self) : # Cancels the current calculation
+        self.cancel = True
+        return
+
+
+
+
 
 def printOnConsole(text) : # Prints the text in the window
-    interf.printConsole(text)
+    interf.printConsole(str(text))
     return
 
 
 
 
 def disp_pic(picture) : # Displays a picture in the window
-    interf.setImage(picture)
-    interf.update()
+    if os.path.exists(picture) :
+        interf.setImage(picture)
+        interf.update()
+    else :
+        printOnConsole("Fatal Error: Wrong Path.")
     return
 
 
@@ -179,21 +211,30 @@ def clean() : # Cleans the console in the window
     return
 
 
+def switchToCancel() : # Switches the compute button to a cancel button
+    interf.switchToCancel()
+    interf.update()
+    return
+
+
+def switchToCompute() : # Switches the cancel button to a compute button
+    interf.switchToCompute()
+    interf.update()
+    return
+
+
+def toCancel() : # Returns the cancel flag
+    return interf.cancel
 
 
 def launchApp(picture) : # Launches the GUI
 
     window = Tk()
     global interf
-    interf = Interface(window)
-
-    #tkimage = ImageTk.PhotoImage(Image.open(interface.image))
-    #Label(interface, image=tkimage).pack(side=TOP)
+    interf = Interface(window,picture)
 
     printOnConsole("Waiting for instructions...")
 
     interf.mainloop()
-    #interf.destroy()
     return
-
 

@@ -13,16 +13,20 @@ import sign_detect2,reass
 
 def main(filepath, threshold, margin, boxSize, color, gui) :
 
+    global toCancel
+    toCancel = False
+
     """
     margin = 12
     boxSize = 6
     color = [120,120,255]
     threshold = 4
     """
+    if not toCancel :
+        sign_detect2.main(filepath,margin,threshold,gui) # Detection of signals on the spectrogram
 
-    sign_detect2.main(filepath,margin,threshold,gui) # Detection of signals on the spectrogram
-
-    reass.main(list(),margin,boxSize,color,gui) # Reassembly of the different parts for a labeled spectrogram
+    if not toCancel :
+        reass.main(list(),margin,boxSize,color,gui) # Reassembly of the different parts for a labeled spectrogram
 
     """
     if os.path.exists("tmp/spectrogram.jpg") :
