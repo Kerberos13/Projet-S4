@@ -7,13 +7,14 @@
 
 from PIL import Image
 import numpy, os, sys
-from gui import printOnConsole
+#from gui import printOnConsole
 
 
 # This function displays text on a console like interface if the GUI is started
 
 def printC(text,gui) :
     if gui :
+        from gui import printOnConsole
         printOnConsole(text)
         return
     else :

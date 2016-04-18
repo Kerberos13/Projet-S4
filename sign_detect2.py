@@ -9,7 +9,7 @@ import sys, os, numpy
 from PIL import Image
 from math import floor
 from scipy import signal
-from gui import printOnConsole
+#from gui import printOnConsole
 
 
 
@@ -17,6 +17,7 @@ from gui import printOnConsole
 
 def printC(text,gui) :
     if gui :
+        from gui import printOnConsole
         printOnConsole(text)
         return
     else :
