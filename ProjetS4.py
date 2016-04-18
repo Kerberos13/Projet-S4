@@ -6,7 +6,43 @@
 import main,gui
 from threading import Thread
 #import subprocess
-import os
+import os,time
+
+
+
+
+# This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
+
+class mutex() :
+
+    def __init__(self,value) :
+        self.toCancel = value
+        self.locked = False
+        return
+
+    def set(value) :
+        self.toCancel = value
+        return
+
+    def get() :
+        return self.toCancel
+
+    def lock() :
+        i = 0
+        while (i<10) : # We allow up to 10 tries
+            if self.get() : # The lock has already been taken
+                i+=1
+                time.sleep(.1)
+            else : # The lock is free
+                self.set(True)
+                return True # Locking was a success
+        return False # Locking was a failure
+
+    def unlock() :
+        self.set(False)
+        return
+        
+
 
 
 # This thread is the calculation thread
@@ -147,6 +183,8 @@ class CancelWatcher(Thread) :
                 else :
                     gui.printOnConsole("Error: calculation cannot be cancelled")
                     print("Calculation cannot be cancelled - Error")
+
+            time.sleep(.1) # We do not need the thread to run all the time, we might as well save som resources
 
         return
 

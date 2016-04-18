@@ -42,10 +42,10 @@ class Interface(Frame) : # We define our window
         if os.path.exists(picture) :
             self.image = str(picture)
         else :
-            self.image = "spectrograms/HF_3700_details2.jpg"
+            self.image = "default.png"
         self.Oimage = ImageTk.PhotoImage(Image.open(self.image).resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=2)
+        self.Opic.grid(row=4,column=1,columnspan=3, padx=10)
        
 
         # Threshold       
@@ -93,7 +93,7 @@ class Interface(Frame) : # We define our window
         # Console-like messages
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
-        self.Oconsole.grid(row=4,column=3,sticky=N,columnspan=2)
+        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2)
 
         return
 
@@ -141,7 +141,7 @@ class Interface(Frame) : # We define our window
         self.Opic.destroy()
         self.Oimage = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=2)
+        self.Opic.grid(row=4,column=1,columnspan=3,padx=10)
         return
 
 
@@ -163,7 +163,7 @@ class Interface(Frame) : # We define our window
         self.Oconsole.destroy()
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
-        self.Oconsole.grid(row=4,column=3,sticky=N,columnspan=2)
+        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2)
         return
 
 
