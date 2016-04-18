@@ -93,7 +93,7 @@ class Interface(Frame) : # We define our window
         # Console-like messages
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
-        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2)
+        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
 
         return
 
@@ -138,8 +138,8 @@ class Interface(Frame) : # We define our window
 
 
     def setImage(self,picture) : # This function updates the displayed image by replacing the old widget
-        self.Opic.destroy()
         self.Oimage = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
+        self.Opic.destroy()
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=1,columnspan=3,padx=10)
         return
@@ -163,7 +163,7 @@ class Interface(Frame) : # We define our window
         self.Oconsole.destroy()
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40)
-        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2)
+        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
         return
 
 

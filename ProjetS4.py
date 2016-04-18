@@ -5,43 +5,9 @@
 
 import main,gui
 from threading import Thread
-#import subprocess
 import os,time
 
 
-
-
-# This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
-
-class mutex() :
-
-    def __init__(self,value) :
-        self.toCancel = value
-        self.locked = False
-        return
-
-    def set(value) :
-        self.toCancel = value
-        return
-
-    def get() :
-        return self.toCancel
-
-    def lock() :
-        i = 0
-        while (i<10) : # We allow up to 10 tries
-            if self.get() : # The lock has already been taken
-                i+=1
-                time.sleep(.1)
-            else : # The lock is free
-                self.set(True)
-                return True # Locking was a success
-        return False # Locking was a failure
-
-    def unlock() :
-        self.set(False)
-        return
-        
 
 
 
@@ -56,29 +22,15 @@ class Script(Thread) :
         self.margin = 10
         self.size = 5
         self.color = [120,120,250]
+        self.toCancel = main.mutex(False)
         #self.process = None
         return
 
-    """
-    def stop(self) :
-        if self.process is not None:
-            self.process.terminate()
-            self.process = None
-        return
-    """
 
-    """
-    def isOver(self) :
-        self.process = None
-        return
-    """
 
     def run(self) :
-        """
-        cmd = [ "bash", 'process.sh']
-        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        """
-        main.main(self.picture, self.threshold, self.margin, self.size, self.color, True) # The last optional argument is set to True to signify that the GUI is launched
+       
+        main.main(self.picture, self.threshold, self.margin, self.size, self.color, True)#, self.toCancel) # The last optional arguments are set to True to signify that the GUI is launched and to False in order not to cancel the script
         return
 
 
@@ -120,13 +72,6 @@ class Watcher(Thread) :
         return
 
     def run(self) :
-        """
-        while(self.threadToNotify.is_alive()) :
-            if(not self.threadToWatch.is_alive()) :
-                threadToNotify.isOver()
-            else :
-                threadToNotify.isNotOver()
-        """
         self.threadToNotify.isNotOver()
         gui.switchToCancel()
         self.threadToWatch.join()
@@ -151,40 +96,19 @@ class CancelWatcher(Thread) :
     def run(self) :
         # Note: when running, up to 6 threads are launched, probably one for python, one for ProjetS4.py, one for the GUI, one for the script main.py, one for the Watcher and the last one for the CancelWatcher (by order of launch).
         # If the cancel button is pressed, it means that there should be 6 active threads (7 when counting the ps command line), of which the 4th is the script to interrupt.
-        """
-        while(self.scriptThread.is_alive() and self.guiThread.is_alive()) :
-            if gui.toCancel :
-                #main.toCancel = True
-                self.scriptThread.stop()
-        """
+        
+
         while (self.scriptThread.is_alive() or self.started == False) :
 
             if self.scriptThread.is_alive :
                 self.started = True
 
-            if gui.toCancel() :
+            if gui.toCancel() : # gui.toCancel is a flag, main.toCancel is a mutex containing a flag
+                if main.toCancel.lock() :
+                    main.toCancel.set(True)
+                    main.toCancel.unlock()
 
-                res = list()
-                p = os.popen('ps -eLF | grep "ProjetS4" | grep "python"','r')
-                while True :
-                    line = p.readline()
-                    if not line :
-                        break
-                    else :
-                        res.append(str(line))
-
-                if (len(res) == 7) : # We are capable of stoping the thread
-                    res = res[3].split(" ")
-                    # The thread ID is the 7th item in the list
-                    res = res[6]
-                    gui.printOnConsole("Canceling thread ID "+str(res))
-                    print("Canceling thread ID "+str(res))
-                    os.popen('kill '+str(res),"r")
-                else :
-                    gui.printOnConsole("Error: calculation cannot be cancelled")
-                    print("Calculation cannot be cancelled - Error")
-
-            time.sleep(.1) # We do not need the thread to run all the time, we might as well save som resources
+            time.sleep(.05) # We do not need the thread to run all the time, we might as well save some resources
 
         return
 
@@ -199,6 +123,9 @@ def compute(picture, threshold, margin, size, color) : # This launches the calcu
     thread1.margin = margin
     thread1.size = size
     thread1.color = color
+    if main.toCancel.lock() :
+        main.toCancel.set(False)
+        main.toCancel.unlock()
     gui.disp_pic(picture)
     gui.clean()
     thread1.start()
