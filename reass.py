@@ -7,7 +7,7 @@
 
 from PIL import Image
 import numpy, os, sys
-#from gui import printOnConsole
+from math import floor
 
 
 # This function displays text on a console like interface if the GUI is started
@@ -57,8 +57,24 @@ def closef(picture) :
 
 def unpad(picture,margin) :
 
+    # Because we have margins, we are sure that the signal's dimensions are greater than 1*1 pixel, and because the signal is centered when padded, it is sufficient to analyse the middle row and the middle column to unpad.
 
-    return picture
+    v,h = picture.shape[0],picture.shape[1]
+
+    a = floor(v/2)
+    b = floor(h/2)
+
+    picture2 = numpy.asarray(picture)
+
+    for i in range(1,h+1) : # We analyse along the horizontal axis
+        if numpy.array_equal(picture[a,h-i,:],[0,0,0]) : # Note: for this equality to be verified, we must use lossless compression algorithms such as bmp and not jpg
+            picture2 = numpy.delete(picture2,h-i,1) # We delete the column i
+
+    for i in range(1,v+1) : # We analyse along the vertical axis
+        if numpy.array_equal(picture[v-i,b,:],[0,0,0]) :
+            picture2 = numpy.delete(picture2,-i,0) # We delete the row i
+
+    return picture2
 
 
 
@@ -127,7 +143,7 @@ def main(labels, margin, size, color,gui) :
     files.sort()
     nbSignals = 0
     for elt in files :
-        if (elt[len(elt)-1-9:] == "signal.jpg") :
+        if (elt[len(elt)-1-9:] == "signal.bmp") :
             nbSignals = nbSignals + 1
 
     if (len(labels) != nbSignals) :
@@ -147,7 +163,7 @@ def main(labels, margin, size, color,gui) :
         printC("Processing part "+str(i)+"/"+str(len(files))+"...",gui)
         picture = openf("tmp/"+str(elt))
         picture2 = numpy.asarray(picture)
-        if (elt[len(elt)-1-9:] == "signal.jpg") :
+        if (elt[len(elt)-1-9:] == "signal.bmp") :
             picture2 = unpad(picture2,margin)
             picture2 = box(picture2, color, size)
             picture2 = lbl(picture2, labels[j], color)

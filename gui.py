@@ -230,6 +230,8 @@ def toCancel() : # Returns the cancel flag
 def launchApp(picture) : # Launches the GUI
 
     window = Tk()
+    window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
+
     global interf
     interf = Interface(window,picture)
 

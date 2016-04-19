@@ -9,7 +9,6 @@ import sys, os, numpy
 from PIL import Image
 from math import floor
 from scipy import signal
-#from gui import printOnConsole
 
 
 
@@ -76,8 +75,6 @@ def BW(picture) :
 # Note : one possibility would be to save the frame in order to remerge it with the final image later
 
 def crop(picture) :
-
-
     return picture
 
 
@@ -293,20 +290,29 @@ def split1(picture,mean,margin,threshold) : # picture must be an Image object, m
     a = 0
     b = -1
     nb = 0
+
+    dimh = 100 # horizontal dimension of the padded images
+    dimv = 300 # vertical dimension of the padded images
+
+    # At the moment, we are trying with 28*28 pixels images
+
     for i in range(0,h): # We actually split the images
         if(analyse[i] == tmp and i < h-1) : # The image continue
            b+=1
         else : # The image changes
             b+=1
-            pic = Image.fromarray(spectrogram[0:v:1,a:b:1],'RGB')
+            #pic = Image.fromarray(spectrogram[0:v:1,a:b:1],'RGB')
+            pic = spectrogram[0:v:1,a:b:1,0:3:1]
             name = "tmp/"+"0"*(3-len(str(nb)))+str(nb)
             if(analyse[i] == 1 or i == h-1) :
-                name += "_silence.jpg"
+                name += "_silence.bmp"
             else :
-                name += "_signal.jpg"
+                name += "_signal.bmp"
+                pic = padding(pic,dimh,dimv)
             nb+=1
             tmp = analyse[i]
             a = b
+            pic = Image.fromarray(pic,'RGB')
             pic.save(name)
             files.append(name)
 
@@ -320,52 +326,41 @@ def split1(picture,mean,margin,threshold) : # picture must be an Image object, m
 
 # This functions does zero padding to a given picture
 
-def padding(files,dimh,dimv) :
+def padding(pic,dimh,dimv) :
     
-    for elt in range(0,len(files)-1) :
-        if (os.path.exists(files[elt])) : # We verify that the path is correct
-            pic = openf(files[elt])
+    v,h = pic.shape[0],pic.shape[1]
 
-            pic2 = numpy.asarray(pic)
-            closef(pic)
-            h,v = pic2.shape[0],pic2.shape[1]
+    if (h < dimh) : # The picture is currently not wide enough
+        a = dimh - h
+        b = floor(a/2)
+        a = a - b
 
-            if (h < dimh) : # The picture is currently not wide enough
-                a = dimh - h
-                b = floor(a/2)
-                a = a - b
+        col = numpy.zeros((v,1,3),dtype=pic.dtype)
 
-                row = numpy.floor(numpy.zeros((1,v,3)))
+        for i in range(0,a) :
+            pic = numpy.concatenate((col,pic),axis=1)
 
-                for i in range(0,a - 1) :
-                   pic2 = numpy.vstack(row,pic2)
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,col),axis=1)
 
-                for i in range(0,b-1) :
-                    pic2 = numpy.vstack(pic2,row)
+    if (v < dimv) : # The picture is currently not long enough
+        a = dimv - v
+        b = floor(a/2)
+        a = a - b
 
-            if (v < dimv) : # The picture is currently not long enough
-                a = dimv - v
-                b = floor(a/2)
-                a = a - b
+        row = numpy.zeros((1,h,3),dtype=pic.dtype)
 
-                col = numpy.floor(numpy.zeros((h,1,3)))
+        for i in range(0,a) :
+            pic = numpy.concatenate((row,pic),axis=0)
 
-                for i in range(0,a-1) :
-                    pic2 = hstack(col,pic2)
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,row),axis=0)
 
-                for i in range(0,b-1) :
-                    pic2 = hstack(pic2,col)
+    return pic
+
+    # Note: we do not do anything if the picture is too big. The crop will have to be handled by the second module.
 
 
-            pic = Image.fromarray(pic2,'RGB')
-            pic.save(files[elt]) # We save the resulting files over the originals
-
-            # Note: we do not do anything if the picutre is too big. The crop will have to be handled by the second module.
-
-        else :
-            print("Wrong Path - Fatal Error.\n")
-            sys.exit()
-            return
 
 
 
@@ -375,8 +370,8 @@ def padding(files,dimh,dimv) :
 
 def main(filename,margin,threshold,gui) :
 
-    dimh = 0;
-    dimv = 0;
+    dimh = 100;
+    dimv = 300;
 
     print("\nOpening "+str(filename)+"...\n")
     printC("\n",gui)
@@ -399,10 +394,12 @@ def main(filename,margin,threshold,gui) :
     
     files = split1(spectrogram, spec, margin, threshold)
 
+    """
     print("Optimizing signals...\n")
     printC("Optimizing signals...\n",gui)
 
     padding(files,dimh,dimv)
+    """
 
     print("Closing "+str(filename)+"...\n")
     printC("Closing "+str(filename)+"...\n",gui)
