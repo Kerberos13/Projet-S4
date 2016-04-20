@@ -1,0 +1,10 @@
+fl=dirr('F:\bd_s4\Deep learning\SignauxAnalogiquesFactices\testF');
+nl=length(fl);
+nl2=length(fl(1).isdir);
+for i=1:nl
+        fname=fl(i).name;
+        if strcmp(fname,'ECG.txt')
+            str=['GenerationSignauxDL_v2(F:\bd_s4\Deep learning\SignauxAnalogiquesFactices\testF\',fl(i).name,'\',fname,')'];
+            eval_(str);
+        end
+end
