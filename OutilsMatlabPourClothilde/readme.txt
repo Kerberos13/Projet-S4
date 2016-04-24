@@ -22,4 +22,6 @@ seperate each signal et zoom them according to the fixed scale
 
 
 PS: we can see that evan the central frequence changes( 3700kHz, 6500kHz...) We have the same ban width (0- 3.5*10^4 )
-That is because that these signals are already moved to low frequence ("translater par la fr¨¦qence porteuse" in french)
+That is because that these signals are already moved to low frequence ("translater par la frÂ¨Â¦qence porteuse" in french)
+
+If the size of output image is too big. please change the reslotion 'dpi' in the end of script "lectureClothilde.m" by defaut we set it to '-r600' 
