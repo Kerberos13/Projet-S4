@@ -4,7 +4,7 @@ Ldsp = Signal.Ldsp ;
 N = length(Signal.x);
 
 
-% Axe Fréquentiel
+% Axe FrÃ©quentiel
 axe_f = (0:Ldsp-1)*Signal.Fe/(Ldsp-1);
     
 figure(handles);
@@ -27,7 +27,7 @@ TFlog = 10*log10(Signal.TF);
 
 % version sans axes :
     set(gca,'position',[0 0 1 1],'units','normalized')
-    
+    axis off
     
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 4 3]);
     saveas(gca,[pathstr,'\',name, '.jpg'])
