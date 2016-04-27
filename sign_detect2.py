@@ -60,6 +60,9 @@ def BW(picture) :
 
     if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
         picture = picture.convert('L')
+        picture = numpy.asarray(picture)
+        h,v = picture.shape[0],picture.shape[1]
+        #picture = (picture[0:h,0:v,0]*1+picture[0:h,0:v,1]*1+picture[0:h,0:v,2]*4)/6
         return picture
 
     else :
@@ -68,6 +71,23 @@ def BW(picture) :
         return
 
 
+
+# This function makes an RGB picture into a Hue Saturation Value Picture
+
+def HSV(picture) :
+    
+    if isinstance(picture,Image.Image) : 
+        picture = picture.convert('HSV')
+        picture = numpy.asarray(picture)
+        h,v = picture.shape[0],picture.shape[1]
+        picture = picture[0:h,0:v,0]
+
+        return picture
+
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
 
 
 
@@ -234,7 +254,7 @@ def hgrad1(vec) :
 
 # This function splits the spectrogram into different parts
 
-def split1(picture,mean,margin,threshold) : # picture must be an Image object, mean must be a list, margin an integer and threshold a float (or an integer)
+def split1(picture,mean,margin,threshold,representation) : # picture must be an Image object, mean must be a list, margin an integer and threshold a float (or an integer)
 
     if (os.path.exists("tmp/") == False) : # We create the folder if it does not exist yet
         os.mkdir('tmp')
@@ -252,20 +272,43 @@ def split1(picture,mean,margin,threshold) : # picture must be an Image object, m
     v,h = spectrogram.shape[0],spectrogram.shape[1]
 
 
-    m = 0
-    for elt in mean :
-        m = m + elt
-    m = m/len(mean)
+    if representation == "BW" : # Case of a BW picture
+         
+        m = 0
+        for elt in mean :
+            m = m + elt
+        m = m/len(mean)
+       
+        #print(mean)
+        #print(min(mean),m)
 
-    analyse = list()
-    analyse2 = list()
-    for k in range(0,h) :
-        if (mean[k] > threshold*m) : # Signal detection
-            analyse.append(1)
-        else :
-            analyse.append(0)
+        #m = min(mean)
 
-        analyse2.append(0)
+        analyse = list()
+        analyse2 = list()
+        for k in range(0,h) :
+            if (mean[k] > threshold*m) : # Signal detection
+                analyse.append(1)
+            else :
+                analyse.append(0)
+
+            analyse2.append(0)
+
+    elif representation == "HSV" : # Case of the Hue component of an HSV picture
+
+        analyse = list()
+        analyse2 = list()
+        for k in range(0,h) :
+            if (abs(mean[k]-255) < 20*(7-threshold)) : # The hue is close to pure red
+                analyse.append(1)
+            else :
+                analyse.append(0)
+
+            analyse2.append(0)
+
+    else : # Unknown representation :
+        print("Unknown Representation - Fatal Error.\n")
+        sys.exit()
 
 
     for i in range(0,margin) :
@@ -280,7 +323,7 @@ def split1(picture,mean,margin,threshold) : # picture must be an Image object, m
 
     for i in range(h-margin, h) :
         if (analyse[i] == 1) :
-            for k in range(0,i-margin-1) :
+            for k in range(1,i-margin-1) :
                 analyse2[h-k] = 1
 
 
@@ -382,8 +425,11 @@ def main(filename,margin,threshold,gui) :
     print("Optimizing the spectrogram...\n")
     printC("Optimizing the spectrogram...\n",gui)
     
-    spectrogram2 = BW(spectrogram)
-    spectrogram2 = numpy.asarray(spectrogram2)
+    #spectrogram2,representation = BW(spectrogram),"BW"
+    #spectrogram2 = numpy.asarray(spectrogram2)
+
+    #spectrogram2 = BW(spectrogram)
+    spectrogram2,representation = HSV(spectrogram),"HSV"
     spec = vec(spectrogram2)
     spec = norm1(spec,"inv")
     spec = denoise1(spec)
@@ -392,7 +438,7 @@ def main(filename,margin,threshold,gui) :
     print("Detecting signals...\n")
     printC("Detecting signals...\n",gui)
     
-    files = split1(spectrogram, spec, margin, threshold)
+    files = split1(spectrogram, spec, margin, threshold, representation)
 
     """
     print("Optimizing signals...\n")

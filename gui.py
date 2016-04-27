@@ -52,7 +52,7 @@ class Interface(Frame) : # We define our window
         self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
         self.Lthreshold = Label(self,text="Threshold")                     # self.Lx is the label of the corresponding object
         self.Lthreshold.grid(row=6,column=1,padx=2,sticky=S)
-        self.Othreshold = Spinbox(self, from_=2.5, to=5, increment=0.5)    # self.Ox is the actual object
+        self.Othreshold = Spinbox(self, from_=2, to=6, increment=0.5)    # self.Ox is the actual object
         self.Othreshold.grid(row=7,column=1,padx=2)
 
 
