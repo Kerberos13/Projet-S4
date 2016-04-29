@@ -5,7 +5,7 @@
 
 import sys,os,time
 import sign_detect2,reass,resize
-
+from tools import *
 
 
 # This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
@@ -62,7 +62,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
         toCancel.unlock()
     else :
         print("Aborting Signal detection - Fatal Error")
-        reass.printC("Fatal Error: Aborting Signal detection",gui)
+        printC("Fatal Error: Aborting Signal detection",gui)
         sys.exit()
 
 
@@ -74,7 +74,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
             signals.append(elt)
     if len(signals) == 0 :
         print("No signal detected - Error.")
-        reass.printC("Error: No signal detected",gui)
+        printC("Error: No signal detected",gui)
         sys.exit()
 
 
@@ -88,7 +88,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
             toCancel.unlock()
         else :
             print("Aborting Signal optimisation - Fatal Error")
-            reass.printC("Fatal Error: Aborting Signal optimisation",gui)
+            printC("Fatal Error: Aborting Signal optimisation",gui)
             sys.exit()
 
         time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
@@ -102,7 +102,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
                 toCancel.unlock()
             else :
                 print("Aborting Signal classification - Fatal Error")
-                reass.printC("Fatal Error: Aborting Signal classification",gui)
+                printC("Fatal Error: Aborting Signal classification",gui)
                 sys.exit()
 
             time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
@@ -115,7 +115,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
         toCancel.unlock()
     else :
         print("Aborting Reassembly - Fatal Error")
-        reass.printC("Fatal Error: Aborting Reassembly",gui)
+        printC("Fatal Error: Aborting Reassembly",gui)
         sys.exit()
 
     sys.exit()
