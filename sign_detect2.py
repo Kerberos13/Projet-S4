@@ -8,7 +8,6 @@
 import sys, os, numpy
 from PIL import Image
 from math import floor
-from scipy import signal
 
 
 
@@ -306,7 +305,7 @@ def split1(picture,mean,margin,threshold,representation) : # picture must be an 
 
             analyse2.append(0)
 
-    else : # Unknown representation :
+    else : # Unknown representation
         print("Unknown Representation - Fatal Error.\n")
         sys.exit()
 
@@ -455,7 +454,7 @@ def main(filename,margin,threshold,gui) :
     print("Done.\n")
     printC("Done.\n",gui)
 
-    return
+    return files
 
 
 

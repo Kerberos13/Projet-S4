@@ -5,7 +5,7 @@
 # This module should be launched either by the following command "python reass.py <labels>" or by calling its main function in another module as follow "reass.main(<labels>)"
 
 
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import numpy, os, sys
 from math import floor
 
@@ -104,7 +104,27 @@ def box(picture, color, size) : # Color is a list of the RGB components, size is
 
 def lbl(picture,label,color) :
 
-    return picture
+    if isinstance(picture, numpy.ndarray ) :
+
+        picture = Image.fromarray(picture,'RGB')
+        draw = ImageDraw.Draw(picture)
+
+        # font = ImageFont.truetype(<font-file>, <font-size>)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 12)
+
+        # draw.text((x, y),"Sample Text",(r,g,b))
+        draw.text((3, 2),label,tuple(color),font=font) # Note: color should be a tuple
+        
+        picture = numpy.asarray(picture)
+
+        return picture
+
+    else :
+
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+
+        return
 
 
 
@@ -146,8 +166,17 @@ def main(labels, margin, size, color,gui) :
         if (elt[len(elt)-1-9:] == "signal.bmp") :
             nbSignals = nbSignals + 1
 
+    if not os.path.exists("tmp/lbl.txt") : # We verify that the file exists
+        print("Wrong Path - Reassembling without labels")
+        printC("Wrong Path - Reassembling without labels",gui)
+    else :
+        labels = open("tmp/lbl.txt",'r')
+        labels = labels.split("\n")
+
+
     if (len(labels) != nbSignals) :
         print("Wrong number of labels - Reassembling without labels\n")
+        printC("Wrong number of labels - Reassembling without labels",gui)
         labels = str("Unknown,"*nbSignals).split(",")
 
     print("Merging files...\n")

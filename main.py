@@ -4,7 +4,7 @@
 
 
 import sys,os,time
-import sign_detect2,reass
+import sign_detect2,reass,resize
 
 
 
@@ -58,14 +58,56 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 
     if toCancel.lock() :
         if not toCancel.get() :
-            sign_detect2.main(filepath,margin,threshold,gui) # Detection of signals on the spectrogram
+            files = sign_detect2.main(filepath,margin,threshold,gui) # Detection of signals on the spectrogram
         toCancel.unlock()
     else :
         print("Aborting Signal detection - Fatal Error")
         reass.printC("Fatal Error: Aborting Signal detection",gui)
         sys.exit()
 
-    time.sleep(.1) # We wait a little to make sure that toCancel has been updated by the dedicated thread
+
+    time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
+
+    signals = list()
+    for elt in files :
+        if (elt[len(elt)-10:] == "signal.bmp" and os.path.exists(elt)) :
+            signals.append(elt)
+    if len(signals) == 0 :
+        print("No signal detected - Error.")
+        reass.printC("Error: No signal detected",gui)
+        sys.exit()
+
+
+    W = 50 # Dimension of the ANN along the horizontal axis (wide)
+    H = 50 # Dimension of the ANN along the vertical axis (height)
+    for elt in signals :
+
+        if toCancel.lock() :
+            if not toCancel.get() :
+                windows = resize.main(elt,W,H) # Resizing of detected signals
+            toCancel.unlock()
+        else :
+            print("Aborting Signal optimisation - Fatal Error")
+            reass.printC("Fatal Error: Aborting Signal optimisation",gui)
+            sys.exit()
+
+        time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
+        
+    """
+
+        for el in windows :
+            if toCancel.lock() :
+                if not toCancel.get() :
+                        ann.main(el) # Classification of detected signals
+                toCancel.unlock()
+            else :
+                print("Aborting Signal classification - Fatal Error")
+                reass.printC("Fatal Error: Aborting Signal classification",gui)
+                sys.exit()
+
+            time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
+    """
+
 
     if toCancel.lock() :
         if not toCancel.get() :
