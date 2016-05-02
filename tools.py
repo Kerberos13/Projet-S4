@@ -48,3 +48,40 @@ def closef(picture) :
     return
 
 
+
+# This function makes it Black and White
+
+def BW(picture) :
+
+    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
+        picture = picture.convert('L')
+        picture = numpy.asarray(picture)
+        h,v = picture.shape[0],picture.shape[1]
+        #picture = (picture[0:h,0:v,0]*1+picture[0:h,0:v,1]*1+picture[0:h,0:v,2]*4)/6
+        return picture
+
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
+
+
+
+# This function makes an RGB picture into a Hue Saturation Value Picture
+
+def HSV(picture) :
+    
+    if isinstance(picture,Image.Image) : 
+        picture = picture.convert('HSV')
+        picture = numpy.asarray(picture)
+        h,v = picture.shape[0],picture.shape[1]
+        picture = picture[0:h,0:v,0]
+
+        return picture
+
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
+
+

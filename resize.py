@@ -9,23 +9,6 @@ from math import floor
 from tools import *
 
 
-# This function makes an RGB picture into a Hue Saturation Value Picture
-
-def HSV(picture) :
-    
-    if isinstance(picture,Image.Image) : 
-        picture = picture.convert('HSV')
-        picture = numpy.asarray(picture)
-        h,v = picture.shape[0],picture.shape[1]
-        picture = picture[0:h,0:v,0]
-
-        return picture
-
-    else :
-        print("Wrong Type - Fatal Error.\n")
-        sys.exit()
-        return
-
 
 
 # This function resizes the picture if needed (but conserves original ratio)
