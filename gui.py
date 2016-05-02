@@ -24,23 +24,23 @@ class Interface(Frame) : # We define our window
 
 
         # Window Background
-        Frame.__init__(self, window, width=768, height=576, **kwargs,background=FRAME_BACKGROUND)
-        self.pack(fill = BOTH)
+        Frame.__init__(self, window, width=800, height=600, **kwargs,background=FRAME_BACKGROUND)
+        self.pack(fill = BOTH, expand = YES)
 
 
         # Greetings message
         self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.message.grid(row=1,column=2,pady=5)     # The grid method places a widget in the window; pady is a margin around the widget
+        self.message.grid(row=1,column=2,pady=5,sticky=N+E+W)     # The grid method places a widget in the window; pady is a margin around the widget
 
 
         # Quit Button
         self.Oquit_button = Button(self, text="Quit", command=self.quit, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
-        self.Oquit_button.grid(row=8,column=5,pady=2,padx=2)   # padx is a margin around the widget
+        self.Oquit_button.grid(row=8,column=5,pady=2,padx=2,sticky=N+E+W)   # padx is a margin around the widget and weight is a resizing coefficient
 
 
         # Compute Button
         self.Ocompute_button = Button(self, text="Compute", command=self.compute, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2,sticky=N+E+W)
 
 
         # Cancel flag
@@ -52,63 +52,101 @@ class Interface(Frame) : # We define our window
             self.image = str(picture)
         else :
             self.image = "default.png"
-        self.Oimage = ImageTk.PhotoImage(Image.open(self.image).resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
+        self.image_original = Image.open(self.image)
+        self.image_copy = self.image_original.copy()
+        self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=1,columnspan=3, padx=10)
+        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+E+W+S)
+        self.Opic.bind('<Configure>',self.resize)
+        self.resizeable = False # Security to avoid the resize function to get out of control
       
 
         # Carrier Signal Frequency
         self.frequency = "XXXXHz"
         self.Lfrequency = Label(self,text="Carrier signal's frequency: "+self.frequency,background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lfrequency.grid(row=6, column=2,pady=5)
+        self.Lfrequency.grid(row=6, column=2,pady=5,sticky=N+E+W)
 
 
         # Threshold       
         self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
         self.Lthreshold = Label(self,text="Threshold",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)                     # self.Lx is the label of the corresponding object
-        self.Lthreshold.grid(row=7,column=1,padx=2,sticky=S)
+        self.Lthreshold.grid(row=7,column=1,padx=2,sticky=S+E+W)
         self.Othreshold = Spinbox(self, from_=2, to=6, increment=0.5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)    # self.Ox is the actual object
-        self.Othreshold.grid(row=8,column=1,padx=2)
+        self.Othreshold.grid(row=8,column=1,padx=2,sticky=N+E+W)
 
 
         # Margin
         self.margin = 12
         self.Lmargin = Label(self,text="Margin",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lmargin.grid(row=7,column=2,padx=2,sticky=S)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
+        self.Lmargin.grid(row=7,column=2,padx=2,sticky=S+E+W)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
         self.Omargin = Spinbox(self, from_=5, to = 50, increment = 5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Omargin.grid(row=8,column=2,padx=2)
+        self.Omargin.grid(row=8,column=2,padx=2,sticky=N+E+W)
 
 
         # Box Width
         self.boxWidth = 6
         self.LboxWidth = Label(self,text="Box Width",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.LboxWidth.grid(row=7,column=3,padx=2,sticky=S)
+        self.LboxWidth.grid(row=7,column=3,padx=2,sticky=S+E+W)
         self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.OboxWidth.grid(row=8, column=3, padx=2, sticky=W)
+        self.OboxWidth.grid(row=8, column=3, padx=2, sticky=W+N+E)
 
 
         # Box Color
         self.color = [250,250,250] # RGB
         self.Lcolor = Label(self, text="Box Color",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lcolor.grid(row=7, column=4,padx=2,sticky=S)
+        self.Lcolor.grid(row=7, column=4,padx=2,sticky=W+N+E)
         self.Ocolor = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Ocolor.grid(row=8, column=4,padx=2)
+        self.Ocolor.grid(row=8, column=4,padx=2,sticky=N+E+W)
         self.Ocolor['values'] = ["blue","purple","red","orange","yellow","green","white","black"]
 
 
         # Spectrogram
         self.file = "spectrograms/HF_3700_details2.jpg"
         self.Lfile = Label(self, text = "Select a file",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lfile.grid(row=2,column=4)
+        self.Lfile.grid(row=2,column=4,sticky=N+E+W)
         self.Ofile = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Ofile.grid(row=3,column=4)
+        self.Ofile.grid(row=3,column=4,sticky=N+E+W)
         self.Ofile['values'] = os.listdir("spectrograms/")
 
 
         # Console-like messages
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
+        self.Oconsole.grid(row=4,column=4,sticky=N+E+W+S,columnspan=2,pady=5,padx=5)
+
+
+        # Resizing column coefficients
+        self.columnconfigure(1,weight=1,pad=10)
+        self.columnconfigure(2,weight=1,pad=10)
+        self.columnconfigure(3,weight=1,pad=10)
+        self.columnconfigure(4,weight=2,pad=10)
+        self.columnconfigure(5,weight=2,pad=10)
+
+
+        # Resizing row coefficients
+        self.rowconfigure(1,weight=1)
+        self.rowconfigure(2,weight=1)
+        self.rowconfigure(3,weight=1)
+        self.rowconfigure(4,weight=1)
+        self.rowconfigure(5,weight=1)
+        self.rowconfigure(6,weight=1)
+        self.rowconfigure(7,weight=1)
+        self.rowconfigure(8,weight=1)
+        
+        return
+
+
+    def resize(self,event) : # This functions dynamically resizes the displayed picture
+
+        if self.resizeable :       
+            width = event.width # New widget's dimensions
+            height = event.height
+
+            self.image_original = self.image_copy.resize((width, height),Image.ANTIALIAS)
+            self.Oimage = ImageTk.PhotoImage(self.image_original)
+            self.Opic.configure(image = self.Oimage)
+        else :
+            self.resizeable = True
 
         return
 
@@ -153,21 +191,48 @@ class Interface(Frame) : # We define our window
 
 
     def setImage(self,picture) : # This function updates the displayed image by replacing the old widget
+        """
         self.Oimage = ImageTk.PhotoImage(Image.open(picture).resize((700,500),Image.ANTIALIAS))
         self.Opic.destroy()
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=1,columnspan=3,padx=10)
+        """
+
+        self.image = picture
+        self.image_original = Image.open(self.image)
+        self.image_copy = self.image_original.copy()
+        self.image_copy = self.image_copy.resize((int(self.Opic.winfo_width()), int(self.Opic.winfo_height())),Image.ANTIALIAS)
+        self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
+        self.Opic.destroy()
+        self.Opic = Label(self,image=self.Oimage)
+        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+E+W+S)
+        self.Opic.bind('<Configure>',self.resize)
+        self.resizeable = False # Security to avoid the resize function to get out of control
+      
         return
 
 
 
     def printConsole(self,text) : # This function allows to print console-like messages in a label, on the window
-        self.console = self.console.split("<$>")
+        self.console = self.console.split("\n")
         l = len(self.console)
+        """
+        for elt in self.console :
+            tmp = elt
+            L = 10
+            if len(elt)%L == 0 :
+                n = int(floor(elt/L))
+            elif len(elt) > L :
+                n = int(floor(elt/L))+1
+
+            elt = str()
+            for i in range(0,n) :
+                elt = 
+        """     
         if l > 30 : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
-            self.console = "<$>".join(self.console[l-1-30:])
+            self.console = "\n".join(self.console[l-1-30:])
         else :
-            self.console = "<$>".join(self.console)
+            self.console = "\n".join(self.console)
 
         self.console = self.console + str("<$> "+text+"\n")
         self.Oconsole.config(text=str(self.console))
@@ -178,21 +243,22 @@ class Interface(Frame) : # We define our window
         self.Oconsole.destroy()
         self.console = ""
         self.Oconsole = Label(self,text=self.console,width=40,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
+        self.Oconsole.grid(row=4,column=4,sticky=N+E+W+S,columnspan=2,pady=5,padx=5)
+        self.printConsole("\n"*30)
         return
 
 
     def switchToCancel(self) : # Switches the compute button to a cancel button
         self.Ocompute_button.destroy()
         self.Ocompute_button = Button(self, text="Cancel", command=self.canceling,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2,sticky=N+E+W)
         return
 
 
     def switchToCompute(self) : # Switches the cancel button to a compute button
         self.Ocompute_button.destroy()
         self.Ocompute_button = Button(self, text="Compute", command=self.compute,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2,sticky=N+E+W)
         return
 
 
@@ -205,7 +271,7 @@ class Interface(Frame) : # We define our window
         self.frequency = str(frequency)
         self.Lfrequency.destroy()
         self.Lfrequency = Label(self,text="Carrier signal's frequency: "+self.frequency,background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lfrequency.grid(row=6,column=2,pady=5)
+        self.Lfrequency.grid(row=6,column=2,pady=5,sticky=N+E+W)
         return
 
 
@@ -271,10 +337,11 @@ def launchApp(picture) : # Launches the GUI
     combostyle.theme_use('combostyle') 
 
     window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
-
+    
     global interf
     interf = Interface(window,picture)
 
+    clean()
     printOnConsole("Waiting for instructions...")
 
     interf.mainloop()
