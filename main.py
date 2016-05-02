@@ -137,7 +137,7 @@ if __name__ == "__main__" :
             main(str(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),gui)
         else :
             print("\nInput arguments missing - Using default values.\n")
-            main(str(sys.argv[1]),4,12,6,[120,120,250],gui)
+            main(str(sys.argv[1]),4,12,6,[250,250,250],gui)
     else :
         print("\nInput argument missing - Fatal Error.\n")
         sys.exit()

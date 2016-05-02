@@ -34,8 +34,8 @@ def resize(picture,W,H) :
 
     if isinstance(picture, Image.Image) : # We verify that we effectively are working on an Image.Image object
         h,v = picture.size[0],picture.size[1]
-        #W = W*floor(h/W)
-        H = H*floor(v/H)
+        #W = int(W*floor(h/W))
+        H = int(H*floor(v/H))
         picture.resize((W,H),Image.ANTIALIAS)
         return picture
     else :
@@ -55,12 +55,12 @@ def split(picture,W,H) :
         windows = list()
 
         if h > W : # Horizontal axis (Width)
-            m = floor(h/W)
+            m = int(floor(h/W))
         else :
             m = 1
 
         if v > H : # Vertical axis (Height)
-            p = floor(v/H)
+            p = int(floor(v/H))
         else :
             p = 1
 

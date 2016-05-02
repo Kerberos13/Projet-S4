@@ -127,6 +127,7 @@ def compute(picture, threshold, margin, size, color) : # This launches the calcu
         main.toCancel.set(False)
         main.toCancel.unlock()
     gui.disp_pic(picture)
+    gui.updateFrequency(picture)
     gui.clean()
     thread1.start()
     thread3 = Watcher(thread1,thread2)

@@ -7,31 +7,40 @@ from tkinter import *
 from PIL import Image, ImageTk
 import ProjetS4
 from tkinter.ttk import *
+from tkinter import Button,Frame # We import those items from the tkinter module because they easily allow to change their style 
 
+
+FRAME_BACKGROUND = "#2c2929" #"black"
+WIDGET_BACKGROUND = "#565252" #"gray"
+WIDGET_FOREGROUND =  "#ffffff" #"white"
 
 
 class Interface(Frame) : # We define our window
 
     def __init__(self, window, picture, **kwargs) :
-       
+      
+        style = Style()
+        style.map('TCombobox', background=[('readonly',WIDGET_BACKGROUND)])
+
+
         # Window Background
-        Frame.__init__(self, window, width=768, height=576, **kwargs)
+        Frame.__init__(self, window, width=768, height=576, **kwargs,background=FRAME_BACKGROUND)
         self.pack(fill = BOTH)
 
 
         # Greetings message
-        self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!")
+        self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.message.grid(row=1,column=2,pady=5)     # The grid method places a widget in the window; pady is a margin around the widget
 
 
         # Quit Button
-        self.Oquit_button = Button(self, text="Quit", command=self.quit)  # command = self.quit defines the callback function
-        self.Oquit_button.grid(row=7,column=5,pady=2,padx=2)   # padx is a margin around the widget
+        self.Oquit_button = Button(self, text="Quit", command=self.quit, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
+        self.Oquit_button.grid(row=8,column=5,pady=2,padx=2)   # padx is a margin around the widget
 
 
         # Compute Button
-        self.Ocompute_button = Button(self, text="Compute", command=self.compute)
-        self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
+        self.Ocompute_button = Button(self, text="Compute", command=self.compute, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
 
 
         # Cancel flag
@@ -46,53 +55,59 @@ class Interface(Frame) : # We define our window
         self.Oimage = ImageTk.PhotoImage(Image.open(self.image).resize((700,500),Image.ANTIALIAS)) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=1,columnspan=3, padx=10)
-       
+      
+
+        # Carrier Signal Frequency
+        self.frequency = "XXXXHz"
+        self.Lfrequency = Label(self,text="Carrier signal's frequency: "+self.frequency,background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lfrequency.grid(row=6, column=2,pady=5)
+
 
         # Threshold       
         self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
-        self.Lthreshold = Label(self,text="Threshold")                     # self.Lx is the label of the corresponding object
-        self.Lthreshold.grid(row=6,column=1,padx=2,sticky=S)
-        self.Othreshold = Spinbox(self, from_=2, to=6, increment=0.5)    # self.Ox is the actual object
-        self.Othreshold.grid(row=7,column=1,padx=2)
+        self.Lthreshold = Label(self,text="Threshold",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)                     # self.Lx is the label of the corresponding object
+        self.Lthreshold.grid(row=7,column=1,padx=2,sticky=S)
+        self.Othreshold = Spinbox(self, from_=2, to=6, increment=0.5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)    # self.Ox is the actual object
+        self.Othreshold.grid(row=8,column=1,padx=2)
 
 
         # Margin
         self.margin = 12
-        self.Lmargin = Label(self,text="Margin")
-        self.Lmargin.grid(row=6,column=2,padx=2,sticky=S)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
-        self.Omargin = Spinbox(self, from_=5, to = 20, increment = 5)
-        self.Omargin.grid(row=7,column=2,padx=2)
+        self.Lmargin = Label(self,text="Margin",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lmargin.grid(row=7,column=2,padx=2,sticky=S)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
+        self.Omargin = Spinbox(self, from_=5, to = 50, increment = 5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Omargin.grid(row=8,column=2,padx=2)
 
 
         # Box Width
         self.boxWidth = 6
-        self.LboxWidth = Label(self,text="Box Width")
-        self.LboxWidth.grid(row=6,column=3,padx=2,sticky=S)
-        self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2)
-        self.OboxWidth.grid(row=7, column=3, padx=2, sticky=W)
+        self.LboxWidth = Label(self,text="Box Width",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.LboxWidth.grid(row=7,column=3,padx=2,sticky=S)
+        self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.OboxWidth.grid(row=8, column=3, padx=2, sticky=W)
 
 
         # Box Color
-        self.color = [120,120,250] # RGB
-        self.Lcolor = Label(self, text="Box Color")
-        self.Lcolor.grid(row=6, column=4,padx=2,sticky=S)
-        self.Ocolor = Combobox(self)
-        self.Ocolor.grid(row=7, column=4,padx=2)
+        self.color = [250,250,250] # RGB
+        self.Lcolor = Label(self, text="Box Color",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lcolor.grid(row=7, column=4,padx=2,sticky=S)
+        self.Ocolor = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Ocolor.grid(row=8, column=4,padx=2)
         self.Ocolor['values'] = ["blue","purple","red","orange","yellow","green","white","black"]
 
 
         # Spectrogram
         self.file = "spectrograms/HF_3700_details2.jpg"
-        self.Lfile = Label(self, text = "Select a file")
+        self.Lfile = Label(self, text = "Select a file",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.Lfile.grid(row=2,column=4)
-        self.Ofile = Combobox(self)
+        self.Ofile = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Ofile.grid(row=3,column=4)
         self.Ofile['values'] = os.listdir("spectrograms/")
 
 
         # Console-like messages
         self.console = ""
-        self.Oconsole = Label(self,text=self.console,width=40)
+        self.Oconsole = Label(self,text=self.console,width=40, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
 
         return
@@ -123,7 +138,7 @@ class Interface(Frame) : # We define our window
         elif tmp == "black" :
             self.color = [5,5,5]
         else :
-            self.color = [120,120,250] # Default color is blue
+            self.color = [250,250,250] # Default color is white
 
         if len(str(self.Ofile.get())) != 0 :
             self.file = "spectrograms/"+str(self.Ofile.get())
@@ -162,22 +177,22 @@ class Interface(Frame) : # We define our window
     def clean(self) :   # This cleans the console-like display
         self.Oconsole.destroy()
         self.console = ""
-        self.Oconsole = Label(self,text=self.console,width=40)
+        self.Oconsole = Label(self,text=self.console,width=40,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.Oconsole.grid(row=4,column=4,sticky=N,columnspan=2,pady=5)
         return
 
 
     def switchToCancel(self) : # Switches the compute button to a cancel button
         self.Ocompute_button.destroy()
-        self.Ocompute_button = Button(self, text="Cancel", command=self.canceling)
-        self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
+        self.Ocompute_button = Button(self, text="Cancel", command=self.canceling,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
         return
 
 
     def switchToCompute(self) : # Switches the cancel button to a compute button
         self.Ocompute_button.destroy()
-        self.Ocompute_button = Button(self, text="Compute", command=self.compute)
-        self.Ocompute_button.grid(row=6,column=5,pady=2,padx=2)
+        self.Ocompute_button = Button(self, text="Compute", command=self.compute,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Ocompute_button.grid(row=7,column=5,pady=2,padx=2)
         return
 
 
@@ -186,6 +201,12 @@ class Interface(Frame) : # We define our window
         return
 
 
+    def setFrequency(self,frequency) : # Updates and displays the carrier signal's frequency
+        self.frequency = str(frequency)
+        self.Lfrequency.destroy()
+        self.Lfrequency = Label(self,text="Carrier signal's frequency: "+self.frequency,background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lfrequency.grid(row=6,column=2,pady=5)
+        return
 
 
 
@@ -227,9 +248,28 @@ def toCancel() : # Returns the cancel flag
     return interf.cancel
 
 
+def updateFrequency(picture) : # Updates and displays the carrier signal's frequency
+    f = picture.split("/")
+    f = f[len(f)-1]
+    f = f.split("_")
+    if len(f) == 4 :
+        interf.setFrequency(f[2])
+    else :
+        interf.setFrequency("XXXXHz")
+        print("Unknowm name format - Error.\n")
+    interf.update()
+    return
+
+
 def launchApp(picture) : # Launches the GUI
 
     window = Tk()
+    #window.configure(background=FRAME_BACKGROUND)
+
+    combostyle = Style() # We create a ttk style for all comboboxes
+    combostyle.theme_create('combostyle', parent='alt',settings = {'TCombobox':{'configure':{'selectbackground': WIDGET_BACKGROUND,'fieldbackground': WIDGET_BACKGROUND,'background': WIDGET_BACKGROUND, 'selectforeground': WIDGET_FOREGROUND, 'fieldforeground': WIDGET_FOREGROUND,'foreground': WIDGET_FOREGROUND}}})
+    combostyle.theme_use('combostyle') 
+
     window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
 
     global interf

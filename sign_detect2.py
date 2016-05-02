@@ -195,7 +195,7 @@ def norm1(vec,s) :
 
 def conv1(vec,f) :
 
-    l = floor((len(f)-1)/2)
+    l = int(floor((len(f)-1)/2))
     m = len(vec)
 
     vec2 = list()
@@ -412,8 +412,8 @@ def padding(pic,dimh,dimv) :
 
 def main(filename,margin,threshold,gui) :
 
-    dimh = 100;
-    dimv = 300;
+    dimh = 50; # Minimum horizontal dimension for zero-padding
+    dimv = 150; # Minimum vertical dimension for zero-padding
 
     print("\nOpening "+str(filename)+"...\n")
     printC("\n",gui)
