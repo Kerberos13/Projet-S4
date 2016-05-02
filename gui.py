@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 import ProjetS4
 from tkinter.ttk import *
 from tkinter import Button,Frame # We import those items from the tkinter module because they easily allow to change their style 
+from math import floor
 
 
 FRAME_BACKGROUND = "#2c2929" #"black"
@@ -56,7 +57,7 @@ class Interface(Frame) : # We define our window
         self.image_copy = self.image_original.copy()
         self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+E+W+S)
+        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+W+S)
         self.Opic.bind('<Configure>',self.resize)
         self.resizeable = False # Security to avoid the resize function to get out of control
       
@@ -119,8 +120,8 @@ class Interface(Frame) : # We define our window
         self.columnconfigure(1,weight=1,pad=10)
         self.columnconfigure(2,weight=1,pad=10)
         self.columnconfigure(3,weight=1,pad=10)
-        self.columnconfigure(4,weight=2,pad=10)
-        self.columnconfigure(5,weight=2,pad=10)
+        self.columnconfigure(4,weight=3,pad=10)
+        self.columnconfigure(5,weight=3,pad=10)
 
 
         # Resizing row coefficients
@@ -140,9 +141,12 @@ class Interface(Frame) : # We define our window
         
         #print(event.width,self.Opic.winfo_width(),self.image_original.size)
 
-        if self.resizeable :    
-            width = event.width -4 # New widget's dimensions
+        if self.resizeable :
+            r = self.image_copy.size
+            #print(self.image_original.size)
+            r = r[0]/r[1]
             height = event.height - 4
+            width = floor(height*r) -4 # New widget's dimensions
 
             self.image_original = self.image_copy.resize((width, height),Image.ANTIALIAS)
             self.Oimage = ImageTk.PhotoImage(self.image_original)
@@ -203,12 +207,12 @@ class Interface(Frame) : # We define our window
         self.image = picture
         self.image_original = Image.open(self.image)
         self.image_copy = self.image_original.copy()
-        self.image_copy = self.image_copy.resize((int(self.Opic.winfo_width()), int(self.Opic.winfo_height())),Image.ANTIALIAS)
+        self.image_copy = self.image_copy.resize((int(self.Opic.winfo_width()-4), int(self.Opic.winfo_height())-4),Image.ANTIALIAS)
         self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
         self.Opic.destroy()
         self.resizeable = False # Security to avoid the resize function to get out of control
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+E+W+S)
+        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+W+S)
         self.Opic.bind('<Configure>',self.resize)
       
         return
