@@ -94,7 +94,7 @@ class Interface(Frame) : # We define our window
         # Box Color
         self.color = [250,250,250] # RGB
         self.Lcolor = Label(self, text="Box Color",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lcolor.grid(row=7, column=4,padx=2,sticky=W+N+E)
+        self.Lcolor.grid(row=7, column=4,padx=2,sticky=W+S+E)
         self.Ocolor = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Ocolor.grid(row=8, column=4,padx=2,sticky=N+E+W)
         self.Ocolor['values'] = ["blue","purple","red","orange","yellow","green","white","black"]
@@ -137,10 +137,12 @@ class Interface(Frame) : # We define our window
 
 
     def resize(self,event) : # This functions dynamically resizes the displayed picture
+        
+        #print(event.width,self.Opic.winfo_width(),self.image_original.size)
 
-        if self.resizeable :       
-            width = event.width # New widget's dimensions
-            height = event.height
+        if self.resizeable :    
+            width = event.width -4 # New widget's dimensions
+            height = event.height - 4
 
             self.image_original = self.image_copy.resize((width, height),Image.ANTIALIAS)
             self.Oimage = ImageTk.PhotoImage(self.image_original)
@@ -204,10 +206,10 @@ class Interface(Frame) : # We define our window
         self.image_copy = self.image_copy.resize((int(self.Opic.winfo_width()), int(self.Opic.winfo_height())),Image.ANTIALIAS)
         self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
         self.Opic.destroy()
+        self.resizeable = False # Security to avoid the resize function to get out of control
         self.Opic = Label(self,image=self.Oimage)
         self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+E+W+S)
         self.Opic.bind('<Configure>',self.resize)
-        self.resizeable = False # Security to avoid the resize function to get out of control
       
         return
 
