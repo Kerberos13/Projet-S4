@@ -11,30 +11,6 @@ from math import floor
 from tools import *
 
 
-# This function eliminates the possible zero-padding
-
-def unpad(picture,margin) :
-
-    # Because we have margins, we are sure that the signal's dimensions are greater than 1*1 pixel, and because the signal is centered when padded, it is sufficient to analyse the middle row and the middle column to unpad.
-
-    v,h = picture.shape[0],picture.shape[1]
-
-    a = floor(v/2)
-    b = floor(h/2)
-
-    picture2 = numpy.asarray(picture)
-
-    for i in range(1,h+1) : # We analyse along the horizontal axis
-        if numpy.array_equal(picture[a,h-i,:],[0,0,0]) : # Note: for this equality to be verified, we must use lossless compression algorithms such as bmp and not jpg
-            picture2 = numpy.delete(picture2,h-i,1) # We delete the column i
-
-    for i in range(1,v+1) : # We analyse along the vertical axis
-        if numpy.array_equal(picture[v-i,b,:],[0,0,0]) :
-            picture2 = numpy.delete(picture2,-i,0) # We delete the row i
-
-    return picture2
-
-
 
 
 
@@ -60,7 +36,7 @@ def box(picture, color, size) : # Color is a list of the RGB components, size is
 
 # This function prints a label near the corresponding signal
 
-def lbl(picture,label,color) :
+def lbl(picture,label,color,size) :
 
     if isinstance(picture, numpy.ndarray ) :
 
@@ -68,10 +44,15 @@ def lbl(picture,label,color) :
         draw = ImageDraw.Draw(picture)
 
         # font = ImageFont.truetype(<font-file>, <font-size>)
-        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 12)
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", int(3*size))
+        #font = ImageFont.load_default()
+
+        txt = str()
+        for elt in label :
+            txt += str(elt+"\n")
 
         # draw.text((x, y),"Sample Text",(r,g,b))
-        draw.text((3, 2),label,tuple(color),font=font) # Note: color should be a tuple
+        draw.text((int(2+size), int(2+size)),txt,tuple(color),font=font) # Note: color should be a tuple
         
         picture = numpy.asarray(picture)
 
@@ -151,9 +132,9 @@ def main(labels, margin, size, color,gui) :
         picture = openf("tmp/"+str(elt))
         picture2 = numpy.asarray(picture)
         if (elt[len(elt)-1-9:] == "signal.bmp") :
-            picture2 = unpad(picture2,margin)
+            #picture2 = unpad3(picture2,margin)
             picture2 = box(picture2, color, size)
-            picture2 = lbl(picture2, labels[j], color)
+            picture2 = lbl(picture2, labels[j], color, size)
             j = j + 1
         if (i == 1) :
             pic = picture2

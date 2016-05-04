@@ -29,10 +29,11 @@ class Interface(Frame) : # We define our window
         self.pack(fill = BOTH, expand = YES)
 
 
+        """
         # Greetings message
         self.message = Label(self, text = "Welcome in Super Radio Spectre Analyser!",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.message.grid(row=1,column=2,pady=5,sticky=N+E+W)     # The grid method places a widget in the window; pady is a margin around the widget
-
+        """
 
         # Quit Button
         self.Oquit_button = Button(self, text="Quit", command=self.quit, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
@@ -57,7 +58,7 @@ class Interface(Frame) : # We define our window
         self.image_copy = self.image_original.copy()
         self.Oimage = ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
         self.Opic = Label(self,image=self.Oimage)
-        self.Opic.grid(row=4,column=1,columnspan=3, padx=10,sticky=N+W+S)
+        self.Opic.grid(row=3,column=1,columnspan=3, rowspan=3, padx=10,sticky=N+W+S)
         self.Opic.bind('<Configure>',self.resize)
         self.resizeable = False # Security to avoid the resize function to get out of control
       
@@ -72,7 +73,7 @@ class Interface(Frame) : # We define our window
         self.threshold = 3                                                 # In this, self.X is an attribute of the class, saving the current value
         self.Lthreshold = Label(self,text="Threshold",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)                     # self.Lx is the label of the corresponding object
         self.Lthreshold.grid(row=7,column=1,padx=2,sticky=S+E+W)
-        self.Othreshold = Spinbox(self, from_=2, to=6, increment=0.5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)    # self.Ox is the actual object
+        self.Othreshold = Spinbox(self, from_=2, to=6, increment=1, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)    # self.Ox is the actual object
         self.Othreshold.grid(row=8,column=1,padx=2,sticky=N+E+W)
 
 
@@ -230,7 +231,6 @@ class Interface(Frame) : # We define our window
                 n = int(floor(elt/L))
             elif len(elt) > L :
                 n = int(floor(elt/L))+1
-
             elt = str()
             for i in range(0,n) :
                 elt = 
@@ -342,6 +342,7 @@ def launchApp(picture) : # Launches the GUI
     combostyle.theme_create('combostyle', parent='alt',settings = {'TCombobox':{'configure':{'selectbackground': WIDGET_BACKGROUND,'fieldbackground': WIDGET_BACKGROUND,'background': WIDGET_BACKGROUND, 'selectforeground': WIDGET_FOREGROUND, 'fieldforeground': WIDGET_FOREGROUND,'foreground': WIDGET_FOREGROUND}}})
     combostyle.theme_use('combostyle') 
 
+
     window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
     
     global interf
@@ -352,4 +353,3 @@ def launchApp(picture) : # Launches the GUI
 
     interf.mainloop()
     return
-

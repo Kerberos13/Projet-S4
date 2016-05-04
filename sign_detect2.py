@@ -312,7 +312,7 @@ def split1(picture,mean,margin,threshold,representation) : # picture must be an 
                 name += "_silence.bmp"
             else :
                 name += "_signal.bmp"
-                pic = padding(pic,dimh,dimv)
+                #pic = padding3(pic,dimh,dimv)
             nb+=1
             tmp = analyse[i]
             a = b
@@ -321,50 +321,6 @@ def split1(picture,mean,margin,threshold,representation) : # picture must be an 
             files.append(name)
 
     return files
-
-
-
-
-
-
-
-# This functions does zero padding to a given picture
-
-def padding(pic,dimh,dimv) :
-    
-    v,h = pic.shape[0],pic.shape[1]
-
-    if (h < dimh) : # The picture is currently not wide enough
-        a = dimh - h
-        b = floor(a/2)
-        a = a - b
-
-        col = numpy.zeros((v,1,3),dtype=pic.dtype)
-
-        for i in range(0,a) :
-            pic = numpy.concatenate((col,pic),axis=1)
-
-        for i in range(0,b) :
-            pic = numpy.concatenate((pic,col),axis=1)
-
-    if (v < dimv) : # The picture is currently not long enough
-        a = dimv - v
-        b = floor(a/2)
-        a = a - b
-
-        row = numpy.zeros((1,h,3),dtype=pic.dtype)
-
-        for i in range(0,a) :
-            pic = numpy.concatenate((row,pic),axis=0)
-
-        for i in range(0,b) :
-            pic = numpy.concatenate((pic,row),axis=0)
-
-    return pic
-
-    # Note: we do not do anything if the picture is too big. The crop will have to be handled by the second module.
-
-
 
 
 

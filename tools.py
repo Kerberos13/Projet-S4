@@ -85,3 +85,108 @@ def HSV(picture) :
         return
 
 
+
+# This functions does zero padding to a given picture (NxMx1 matrix)
+
+def padding1(pic,dimh,dimv) :
+    
+    v,h = pic.shape[0],pic.shape[1]
+
+    if (h < dimh) : # The picture is currently not wide enough
+        a = dimh - h
+        b = floor(a/2)
+        a = a - b
+
+        col = numpy.zeros((v,1,1),dtype=pic.dtype)
+
+        for i in range(0,a) :
+            pic = numpy.concatenate((col,pic),axis=1)
+
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,col),axis=1)
+
+    if (v < dimv) : # The picture is currently not long enough
+        a = dimv - v
+        b = floor(a/2)
+        a = a - b
+
+        row = numpy.zeros((1,h,1),dtype=pic.dtype)
+
+        for i in range(0,a) :
+            pic = numpy.concatenate((row,pic),axis=0)
+
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,row),axis=0)
+
+    return pic
+
+    # Note: we do not do anything if the picture is too big. The crop will have to be handled by the second module.
+
+
+
+
+# This functions does zero padding to a given picture (RGB or HSVi NxMx3 matrix)
+
+def padding3(pic,dimh,dimv) :
+    
+    v,h = pic.shape[0],pic.shape[1]
+
+    if (h < dimh) : # The picture is currently not wide enough
+        a = dimh - h
+        b = floor(a/2)
+        a = a - b
+
+        col = numpy.zeros((v,1,3),dtype=pic.dtype)
+
+        for i in range(0,a) :
+            pic = numpy.concatenate((col,pic),axis=1)
+
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,col),axis=1)
+
+    if (v < dimv) : # The picture is currently not long enough
+        a = dimv - v
+        b = floor(a/2)
+        a = a - b
+
+        row = numpy.zeros((1,h,3),dtype=pic.dtype)
+
+        for i in range(0,a) :
+            pic = numpy.concatenate((row,pic),axis=0)
+
+        for i in range(0,b) :
+            pic = numpy.concatenate((pic,row),axis=0)
+
+    return pic
+
+    # Note: we do not do anything if the picture is too big. The crop will have to be handled by the second module.
+
+
+
+
+# This function eliminates the possible zero-padding for a NxMx3 matrix
+
+def unpad3(picture,margin) :
+
+    # Because we have margins, we are sure that the signal's dimensions are greater than 1*1 pixel, and because the signal is centered when padded, it is sufficient to analyse the middle row and the middle column to unpad.
+
+    v,h = picture.shape[0],picture.shape[1]
+
+    a = floor(v/2)
+    b = floor(h/2)
+
+    picture2 = numpy.asarray(picture)
+
+    for i in range(1,h+1) : # We analyse along the horizontal axis
+        if numpy.array_equal(picture[a,h-i,:],[0,0,0]) : # Note: for this equality to be verified, we must use lossless compression algorithms such as bmp and not jpg
+            picture2 = numpy.delete(picture2,h-i,1) # We delete the column i
+
+    for i in range(1,v+1) : # We analyse along the vertical axis
+        if numpy.array_equal(picture[v-i,b,:],[0,0,0]) :
+            picture2 = numpy.delete(picture2,-i,0) # We delete the row i
+
+    return picture2
+
+
+
+

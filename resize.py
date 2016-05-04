@@ -68,6 +68,12 @@ def main(signal,W,H) :
 
     picture = openf(signal)
 
+    # We do some optionnal zero-padding
+
+    picture = numpy.asarray(picture)
+    picture = padding3(picture,W,H)
+    picture = Image.fromarray(picture,'RGB')
+
     # We resize it
 
     picture = resize(picture,W,H)
