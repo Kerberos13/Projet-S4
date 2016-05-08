@@ -1,0 +1,35 @@
+dataset_GENER.py
+
+objectif : to transform images to matrix and save it to .save ( can be read by function load_data in logistic_sgd.py)  
+	the code can read name of file and make the labels for every images. 
+
+input: dossier with images, !! images names MUST have modulation info(name of modulation).
+
+output : .save  compressed file with matrix [[train data, label],[test data, label],[validation data, label]]
+
+****************************************************************************************************************************************
+lire_fichier.py
+
+objectif : go through a dossier
+input : dossier address
+output : list of fichiers add
+
+
+****************************************************************************************************************************************
+main.py 
+
+objectf : to generate data with python files above
+input : three address (trainset, test set, validation set)
+output : compressed file with data
+
+*******************************************************************************************************************
+imageRedim.py
+
+objectif : resize picture
+
+input : location of images files
+output :  resized images 
+
+
+PS:
+if problems, please consider import problems and file location differences.
