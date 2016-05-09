@@ -149,7 +149,7 @@ class Interface(Frame) : # We define our window
             r = r[0]/r[1]
             height = int(event.height - 4)
             width = int(floor(height*r) -4) # New widget's dimensions
-
+           
             self.image_original = self.image_copy.resize((width, height),Image.ANTIALIAS)
             self.Oimage = ImageTk.PhotoImage(self.image_original)
             self.Opic.configure(image = self.Oimage)
@@ -361,7 +361,10 @@ def launchApp(picture) : # Launches the GUI
 
 
     window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
-    
+    #window.configure(background=FRAME_BACKGROUND)
+    window.option_add("*background",FRAME_BACKGROUND)
+
+
     global interf
     interf = Interface(window,picture)
 
