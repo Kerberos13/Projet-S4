@@ -13,12 +13,16 @@ from math import floor
 
 def printC(text,gui) :
     if gui :
-        from gui import printOnConsole
+        if int(sys.version[0]) == 2 :
+            from gui2 import printOnConsole
+        elif int(sys.version[0]) == 3 :
+            from gui3 import printOnConsole
+
+        #from gui import printOnConsole
         printOnConsole(text)
         return
     else :
         return
-
 
 
 # This function opens an existing spectrogram
@@ -133,8 +137,8 @@ def padding3(pic,dimh,dimv) :
 
     if (h < dimh) : # The picture is currently not wide enough
         a = dimh - h
-        b = floor(a/2)
-        a = a - b
+        b = int(floor(a/2))
+        a = int(a - b)
 
         col = numpy.zeros((v,1,3),dtype=pic.dtype)
 
@@ -146,8 +150,8 @@ def padding3(pic,dimh,dimv) :
 
     if (v < dimv) : # The picture is currently not long enough
         a = dimv - v
-        b = floor(a/2)
-        a = a - b
+        b = int(floor(a/2))
+        a = int(a - b)
 
         row = numpy.zeros((1,h,3),dtype=pic.dtype)
 

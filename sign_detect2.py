@@ -11,16 +11,6 @@ from math import floor
 from tools import *
 
 
-# This function displays text on a console like interface if the GUI is started
-
-def printC(text,gui) :
-    if gui :
-        from gui import printOnConsole
-        printOnConsole(text)
-        return
-    else :
-        return
-
 
 # This function opens an existing spectrogram
 

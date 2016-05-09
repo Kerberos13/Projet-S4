@@ -19,7 +19,8 @@ WIDGET_FOREGROUND =  "#ffffff" #"white"
 class Interface(Frame) : # We define our window
 
     def __init__(self, window, picture, **kwargs) :
-      
+ 
+    
         style = Style()
         style.map('TCombobox', background=[('readonly',WIDGET_BACKGROUND)])
 
@@ -113,7 +114,7 @@ class Interface(Frame) : # We define our window
 
         # Console-like messages
         self.console = ""
-        self.Oconsole = Label(self,text=self.console,width=40, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Oconsole = Label(self,text=self.console, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Oconsole.grid(row=4,column=4,sticky=N+E+W+S,columnspan=2,pady=5,padx=5)
 
 
@@ -223,32 +224,48 @@ class Interface(Frame) : # We define our window
     def printConsole(self,text) : # This function allows to print console-like messages in a label, on the window
         self.console = self.console.split("\n")
         l = len(self.console)
-        """
-        for elt in self.console :
-            tmp = elt
-            L = 10
-            if len(elt)%L == 0 :
-                n = int(floor(elt/L))
-            elif len(elt) > L :
-                n = int(floor(elt/L))+1
-            elt = str()
-            for i in range(0,n) :
-                elt = 
-        """     
-        if l > 30 : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
+        txt = str()
+
+        W = int(self.Oconsole.winfo_width())
+        H = int(self.Oconsole.winfo_height())
+
+
+        if H==1 :
+            H=30
+        else :
+            H-=4
+            H = int(floor(H/15))
+        if W==1 :
+            W=30
+        else :
+            W-=4
+            W = int(floor(W/7))
+
+
+
+        L = len(text)
+
+        i = 0
+        while i*W < L :
+            i+=1
+            txt+=text[(i-1)*W:min(i*W,L)]+"\n"
+
+
+        if l > H : # We do not want the label to be too long, otherwise, it will change the dimensions of the whole window
             self.console = "\n".join(self.console[l-1-30:])
         else :
             self.console = "\n".join(self.console)
 
-        self.console = self.console + str("<$> "+text+"\n")
+        self.console = self.console + str("<$> "+txt+"\n")
         self.Oconsole.config(text=str(self.console))
+        self.update()
         return
 
 
     def clean(self) :   # This cleans the console-like display
         self.Oconsole.destroy()
         self.console = ""
-        self.Oconsole = Label(self,text=self.console,width=40,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Oconsole = Label(self,text=self.console,background=WIDGET_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.Oconsole.grid(row=4,column=4,sticky=N+E+W+S,columnspan=2,pady=5,padx=5)
         self.printConsole("\n"*30)
         return
@@ -353,3 +370,5 @@ def launchApp(picture) : # Launches the GUI
 
     interf.mainloop()
     return
+
+
