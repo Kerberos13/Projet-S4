@@ -26,7 +26,7 @@ class Interface(Frame) : # We define our window
 
 
         # Window Background
-        Frame.__init__(self, window, width=800, height=600, **kwargs,background=FRAME_BACKGROUND)
+        Frame.__init__(self, window, width=800, height=600, **kwargs)#,background=FRAME_BACKGROUND)
         self.pack(fill = BOTH, expand = YES)
 
 
@@ -361,7 +361,9 @@ def launchApp(picture) : # Launches the GUI
 
 
     window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
-    
+    window.option_add("*background",FRAME_BACKGROUND)   
+
+
     global interf
     interf = Interface(window,picture)
 
