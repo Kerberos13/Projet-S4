@@ -3,12 +3,14 @@
 # The aim of this module is to bring together the python script and its GUI
 # Because we want the GUI to work as the computation goes, we need to create several threads
 
-import scripts.main as main
+import sys,os
+sys.path.insert(0,'scripts/')
+
+import main
 from threading import Thread
 import os,time
 
 
-import sys
 if int(sys.version[0]) == 2 :
     print("Using Python2 compatibility mode - For a better experience, please try running Python3")
     from scripts import gui2 as gui

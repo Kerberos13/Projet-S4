@@ -168,17 +168,17 @@ class Interface(Frame) : # We define our window
         self.boxWidth = int(float(self.OboxWidth.get()))
         tmp = str(self.Ocolor.get())
         if tmp == "blue" :
-            self.color = [120,120,250]
+            self.color = [15,65,220]
         elif tmp == "red" :
-            self.color = [250,60,60]
+            self.color = [180,0,0]
         elif tmp == "green" :
-            self.color = [60,250,120]
+            self.color = [35,200,10]
         elif tmp == "yellow" :
-            self.color = [250,250,60]
+            self.color = [245,245,20]
         elif tmp == "orange" :
-            self.color = [250,170,20]
+            self.color = [250,130,10]
         elif tmp == "purple" :
-            self.color = [250,20,250]
+            self.color = [225,10,160]
         elif tmp == "white" :
             self.color = [250,250,250]
         elif tmp == "black" :

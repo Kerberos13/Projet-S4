@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 # This module should be launched either by the following command "python main.py <filepath>" or by calling its main function in another module as follow "main.main(<filepath>)" where <filepath> is the relative path of a spectrogram
+# This module is also called by the ProjetS4 module when using the GUI
 
 
 import sys,os,time
-from scripts import sign_detect2,reass,resize
-from scripts.tools import *
+import sign_detect2,reass,resize
+from tools import *
 
 
 # This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
@@ -68,7 +69,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 
     time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
 
-    print(files)
+    #print(files)
 
     signals = list()
     for elt in files :
@@ -81,7 +82,7 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 
 
     W = 50 # Dimension of the ANN along the horizontal axis (wide)
-    H = 50 # Dimension of the ANN along the vertical axis (height)
+    H = 37 # Dimension of the ANN along the vertical axis (height)
     for elt in signals :
 
         if toCancel.lock() :
@@ -96,18 +97,16 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
         time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
         
     """
+    if toCancel.lock() :
+        if not toCancel.get() :
+                ann.main(el) # Classification of detected signals
+        toCancel.unlock()
+    else :
+        print("Aborting Signal classification - Fatal Error")
+        printC("Fatal Error: Aborting Signal classification",gui)
+        sys.exit()
 
-        for el in windows :
-            if toCancel.lock() :
-                if not toCancel.get() :
-                        ann.main(el) # Classification of detected signals
-                toCancel.unlock()
-            else :
-                print("Aborting Signal classification - Fatal Error")
-                printC("Fatal Error: Aborting Signal classification",gui)
-                sys.exit()
-
-            time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
+    time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
     """
 
 
@@ -129,17 +128,35 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 # This redirects to the main function
 
 if __name__ == "__main__" :
-    if len(sys.argv) == 7 :
+
+    N = len(sys.argv)
+
+    if N == 7 :
         gui = sys.argv[6]
     else :
         gui = False
 
-    if(len(sys.argv)) > 1 :
-        if len(sys.argv) >= 7 :
-            main(str(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),gui)
-        else :
+    if N > 1 :
+        path = str(sys.argv[1])
+        threshold = 2
+        margin = 10
+        box_width = 4
+        color = [250,250,250]
+    
+        if N >= 3 :
+            threshold = int(sys.argv[2])
+        if N >= 4 :
+            margin = int(sys.argv[3])
+        if N >= 5 :
+            box_width = int(sys.argv[4])
+        if N >= 6 :
+            color = int(sys.argv[5])
+
+        main(path,threshold,margin,box_width,color,gui)
+        
+        if N < 6 :
             print("\nInput arguments missing - Using default values.\n")
-            main(str(sys.argv[1]),4,12,6,[250,250,250],gui)
+    
     else :
         print("\nInput argument missing - Fatal Error.\n")
         sys.exit()

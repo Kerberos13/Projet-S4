@@ -8,7 +8,8 @@
 
 
 import os,sys
-from scripts import sign_detect2,resize
+#os.path.insert(0,'scripts/')
+import sign_detect2,resize
 from PIL import Image
 from math import ceil
 

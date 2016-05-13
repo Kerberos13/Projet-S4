@@ -7,8 +7,9 @@
 
 from PIL import Image, ImageFont, ImageDraw
 import numpy, os, sys
+#os.path.insert(0,'scripts/')
 from math import floor
-from scripts.tools import *
+from tools import *
 
 
 
