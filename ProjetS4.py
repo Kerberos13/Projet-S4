@@ -225,14 +225,14 @@ class Interface(Frame) : # We define our window
 
         if len(str(self.Ofile.get())) != 0 :
             self.file = "spectrograms/"+str(self.Ofile.get())
-            #ProjetS4.compute(self.file, self.threshold, self.margin, self.boxWidth, self.color)
 
 
             ##/////////////////////##
             ### START OF THE MAIN ###
             ##\\\\\\\\\\\\\\\\\\\\\##
 
-
+            
+            self.switchToCancel()
             self.setImage(str(self.file))
             self.setFrequency(str(self.file))
 
@@ -290,6 +290,7 @@ class Interface(Frame) : # We define our window
                     reass.main(list(),self.margin,self.boxWidth,self.color,True) # Reassembly of the different parts for a labeled spectrogram
                     self.printOnConsole("Done.")
                     self.setImage("tmp/spectrogram.jpg")
+                    self.switchToCompute()
                 else :
                     printOnConsole("Fatal Error: Aborting Reassembly")
 
