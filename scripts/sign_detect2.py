@@ -283,7 +283,7 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
         sys.exit()
 
 
-    margin = floor(margin*len(analyse)/100)+1
+    margin = int(floor(margin*len(analyse)/100)+1)
 
 
     for i in range(0,margin) :
@@ -301,36 +301,27 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
             for k in range(1,i-margin-1) :
                 analyse2[h-k] = 1
 
-    #print("ANALYSE",analyse)
 
+    #print("ANALYSE",analyse)
 
     analyse = analyse2
 
     tmp = analyse[0]
     a = 0
-    b = -1
+    b = 0
     nb = 0
-
-    #dimh = 100 # horizontal dimension of the padded images
-    #dimv = 300 # vertical dimension of the padded images
-
-    # At the moment, we are trying with 28*28 pixels images
-
-
 
     for i in range(0,h): # We actually split the images
         if(analyse[i] == tmp and i < h-1) : # The image continue
-           b+=1
+            b+=1
         else : # The image changes
             b+=1
-            #pic = Image.fromarray(spectrogram[0:v:1,a:b:1],'RGB')
             pic = spectrogram[0:v:1,a:b:1,0:3:1]
             name = TMP+filepath[len(filepath)-1]+"0"*(3-len(str(nb)))+str(nb)
             if(analyse[i] == 1 or i == h-1) :
                 name += "_silence.bmp"
             else :
                 name += "_signal.bmp"
-                #pic = padding3(pic,dimh,dimv)
             nb+=1
             tmp = analyse[i]
             a = b
@@ -352,13 +343,10 @@ def main(filename,margin,threshold,gui) :
     #dimv = 37; # Minimum vertical dimension for zero-padding
 
     print("\nOpening "+str(filename)+"...\n")
-    printC("\n",gui)
-    printC("Opening "+str(filename)+"...\n",gui)
 
     spectrogram = openf(filename)
 
     print("Optimizing the spectrogram...\n")
-    printC("Optimizing the spectrogram...\n",gui)
     
     #spectrogram2,representation = BW(spectrogram),"BW"
     #spectrogram2 = numpy.asarray(spectrogram2)
@@ -371,7 +359,6 @@ def main(filename,margin,threshold,gui) :
     #print(spec)
 
     print("Detecting signals...\n")
-    printC("Detecting signals...\n",gui)
     
     files = split1(filename,spectrogram, spec, margin, threshold, representation)
 
@@ -383,12 +370,10 @@ def main(filename,margin,threshold,gui) :
     """
 
     print("Closing "+str(filename)+"...\n")
-    printC("Closing "+str(filename)+"...\n",gui)
 
     closef(spectrogram)
 
     print("Done.\n")
-    printC("Done.\n",gui)
 
     return files
 

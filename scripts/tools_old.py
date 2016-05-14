@@ -2,50 +2,27 @@
 
 # The aim of this module is to provide generic tools for different modules
 
-import sys, os, numpy, time
+import sys, os, numpy
 from PIL import Image
 from math import floor
 
 
 
-# This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
 
-class mutex() :
+# This function displays text on a console like interface if the GUI is started
 
-    def __init__(self,value) :
-        self.content = value
-        self.locked = False
+def printC(text,gui) :
+    if gui :
+        if int(sys.version[0]) == 2 :
+            from scripts.gui2 import printOnConsole
+        elif int(sys.version[0]) == 3 :
+            from scripts.gui3 import printOnConsole
+
+        #from gui import printOnConsole
+        printOnConsole(text)
         return
-
-    def set(self,value) :
-        if self.lock() :
-            self.content = value
-            self.unlock()
+    else :
         return
-
-    def get(self) :
-        if self.lock() :
-            content = self.content
-            self.unlock()
-        else :
-            content = None
-        return content
-
-    def lock(self) :
-        i = 0
-        while (i<10) : # We allow up to 10 tries
-            if self.locked : # The lock has already been taken
-                i+=1
-                time.sleep(.1)
-            else : # The lock is free
-                self.locked = True
-                return True # Locking was a success
-        return False # Locking was a failure
-
-    def unlock(self) :
-        self.locked = False
-        return
-
 
 
 # This function opens an existing spectrogram

@@ -4,10 +4,9 @@
 # This module is also called by the ProjetS4 module when using the GUI
 
 
-import sys,os,time
+import sys,os,time,numpy
 import sign_detect2,reass,resize
 from tools import *
-
 
 # This is a mutex, a shared resource with mutual exclusion in order to avoid conflict
 
@@ -50,13 +49,6 @@ toCancel = mutex(False)
 def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 
 
-    """
-    margin = 12
-    boxSize = 6
-    color = [120,120,255]
-    threshold = 4
-    """
-
     if toCancel.lock() :
         if not toCancel.get() :
             files = sign_detect2.main(os.path.abspath(filepath),margin,threshold,gui) # Detection of signals on the spectrogram
@@ -83,6 +75,9 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
 
     W = 50 # Dimension of the ANN along the horizontal axis (wide)
     H = 37 # Dimension of the ANN along the vertical axis (height)
+    
+    #CNN_input = numpy.ndarray()
+    
     for elt in signals :
 
         if toCancel.lock() :
@@ -94,12 +89,24 @@ def main(filepath, threshold, margin, boxSize, color, gui) :#, toCancel) :
             printC("Fatal Error: Aborting Signal optimisation",gui)
             sys.exit()
 
+        # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
+        # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
+        """
+        v,h = windows.shape[0],windows.shape[1]
+        tmp = numpy.ndarray()
+        for i in range(0,v) :
+            tmp = numpy.hstack((tmp,windows(i,0:h)))
+              
+        CNN_input = numpy.vstack((CNN_input,tmp))
+        """
+
         time.sleep(.05) # We wait a little to make sure that toCancel has been updated by the dedicated thread
         
+
     """
     if toCancel.lock() :
         if not toCancel.get() :
-                ann.main(el) # Classification of detected signals
+                labels = ann.main(CNN_input) # Classification of detected signals
         toCancel.unlock()
     else :
         print("Aborting Signal classification - Fatal Error")

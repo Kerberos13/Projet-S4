@@ -108,7 +108,6 @@ def main(labels, margin, size, color,gui) :
 
     if not os.path.exists("tmp/lbl.txt") : # We verify that the file exists
         print("Wrong Path - Reassembling without labels")
-        printC("Wrong Path - Reassembling without labels",gui)
     else :
         labels = open("tmp/lbl.txt",'r')
         labels = labels.split("\n")
@@ -116,11 +115,9 @@ def main(labels, margin, size, color,gui) :
 
     if (len(labels) != nbSignals) :
         print("Wrong number of labels - Reassembling without labels\n")
-        printC("Wrong number of labels - Reassembling without labels",gui)
         labels = str("Unknown,"*nbSignals).split(",")
 
     print("Merging files...\n")
-    printC("Merging files...\n",gui)
 
     i = 0
     j = 0
@@ -129,7 +126,6 @@ def main(labels, margin, size, color,gui) :
         i = i+1
 
         print("Processing part "+str(i)+"/"+str(len(files))+"...")
-        printC("Processing part "+str(i)+"/"+str(len(files))+"...",gui)
         picture = openf("tmp/"+str(elt))
         picture2 = numpy.asarray(picture)
         if (elt[len(elt)-1-9:] == "signal.bmp") :
@@ -144,19 +140,15 @@ def main(labels, margin, size, color,gui) :
         closef(picture)
 
     print("\nCleaning tmp folder...\n")
-    printC("\n",gui)
-    printC("Cleaning tmp folder...\n",gui)
 
     clean(files)
 
     print("Saving final spectrogram...\n")
-    printC("Saving final spectrogram...\n",gui)
 
     pic = Image.fromarray(pic,'RGB')
     pic.save("tmp/spectrogram.jpg")
 
     print("Done.\n")
-    printC("Done.\n",gui)
 
     return
 
