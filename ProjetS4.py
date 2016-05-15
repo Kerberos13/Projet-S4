@@ -65,7 +65,7 @@ class Interface(Frame) : # We define our window
         # Quit Button
         self.Oquit_button = Button(self, text="Quit", command=self.quit_app, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
         self.Oquit_button.grid(row=8,column=5,pady=2,padx=2,sticky=N+E+W)   # padx is a margin around the widget and weight is a resizing coefficient
-        self.quitting = False
+        self.quitting = mutex(False)
 
 
         # Compute Button
@@ -167,7 +167,7 @@ class Interface(Frame) : # We define our window
 
 
     def quit_app(self) :
-        self.quitting = True
+        self.quitting.set(True)
         self.quit()
         return
 
@@ -243,6 +243,7 @@ class Interface(Frame) : # We define our window
                 self.printOnConsole("Done.")
             else :
                 self.printOnConsole("Fatal Error: Aborting Signal detection")
+                self.switchToCompute()
 
             signals = list()
             for elt in files :
@@ -250,6 +251,7 @@ class Interface(Frame) : # We define our window
                     signals.append(elt)
             if len(signals) == 0 :
                 self.printOnConsole("Error: No signal detected")
+                self.switchToCompute()
             else :
 
                 W = 50 # Dimension of the ANN along the horizontal axis (wide)
@@ -264,6 +266,7 @@ class Interface(Frame) : # We define our window
                         self.printOnConsole("Done.")
                     else :
                         self.printOnConsole("Fatal Error: Aborting Signal optimisation")
+                        self.switchToCompute()
 
                     # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
                     # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
@@ -293,6 +296,7 @@ class Interface(Frame) : # We define our window
                     self.switchToCompute()
                 else :
                     printOnConsole("Fatal Error: Aborting Reassembly")
+                    self.switchToCompute()
 
 
             ##///////////////////##
