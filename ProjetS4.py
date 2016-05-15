@@ -5,11 +5,17 @@
 import sys,os,time
 sys.path.insert(0,'scripts/')
 
+try :
+    import PIL,numpy
+except ImportError :
+    print("Pillow and Numpy dependancies must be installed. Try running the setup.py script - Fatal Error.\n")
+    sys.exit()
+
+
 import sign_detect2,resize,reass
 from tools import *
 
 from threading import Thread
-#from PIL import Image, ImageTk
 import PIL.Image, PIL.ImageTk
 from math import floor
 
