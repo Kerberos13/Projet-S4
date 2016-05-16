@@ -27,15 +27,20 @@ if int(sys.version[0]) == 2 :
     from Tkinter import *
     from ttk import *
     from Tkinter import Button,Frame # We import those items from the tkinter module because they easily allow to change their style 
+    from tkFileDialog import askopenfilename
 
 elif int(sys.version[0]) == 3 :
     from tkinter import *
     from tkinter.ttk import *
     from tkinter import Button,Frame # We import those items from the tkinter module because they easily allow to change their style 
+    from tkinter.filedialog import askopenfilename
+
 
 else :
     print("Unsupported Python version: please try running Python2 or greater - Fatal Error")
     sys.exit()
+
+
 
 
 
@@ -45,7 +50,6 @@ else :
 FRAME_BACKGROUND = "#2c2929" # "dark gray"
 WIDGET_BACKGROUND = "#565252" # "medium gray"
 WIDGET_FOREGROUND =  "#ffffff" # "white"
-
 
 
 class Interface(Frame) : # We define our window
@@ -69,9 +73,8 @@ class Interface(Frame) : # We define our window
         """
 
         # Quit Button
-        self.Oquit_button = Button(self, text="Quit", command=self.quit_app, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
+        self.Oquit_button = Button(self, text="Quit", command=quit, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)  # command = self.quit defines the callback function
         self.Oquit_button.grid(row=8,column=5,pady=2,padx=2,sticky=N+E+W)   # padx is a margin around the widget and weight is a resizing coefficient
-        self.quitting = mutex(False)
 
 
         # Compute Button
@@ -137,12 +140,16 @@ class Interface(Frame) : # We define our window
 
 
         # Spectrogram
-        self.file = "spectrograms/HF_3700_details2.jpg"
-        self.Lfile = Label(self, text = "Select a file",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
-        self.Lfile.grid(row=2,column=4,sticky=N+E+W)
-        self.Ofile = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
-        self.Ofile.grid(row=3,column=4,sticky=N+E+W)
-        self.Ofile['values'] = os.listdir("spectrograms/")
+        self.file = ""
+        #self.Lfile = Label(self, text = "Select a file",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        #self.Lfile.grid(row=2,column=4,sticky=N+E+W)
+        #self.Ofile = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        #self.Ofile.grid(row=3,column=4,sticky=N+E+W)
+        #self.Ofile['values'] = os.listdir("spectrograms/")
+        self.Lfile = Label(self, text = "File selected: "+str(self.file),background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lfile.grid(row=2,column=4,columnspan = 2, sticky=N+E+W)
+        self.Ofile = Button(self, text="Select a file", command=self.selectFile, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Ofile.grid(row=3, column=5, sticky = N) 
 
 
         # Console-like messages
@@ -168,16 +175,27 @@ class Interface(Frame) : # We define our window
         self.rowconfigure(6,weight=1)
         self.rowconfigure(7,weight=1)
         self.rowconfigure(8,weight=1)
-        
+
+       
         return
 
 
-    def quit_app(self) :
-        self.quitting.set(True)
-        self.quit()
+
+
+    def selectFile(self) :
+        self.file = askopenfilename(initialdir = "spectrograms/", title = "Select file")
+        fileName = str(self.file)
+        if len(fileName) != 0 :
+            fileName = fileName.split("/")
+            fileName = fileName.pop()
+
+        self.Lfile.destroy()
+        self.Lfile = Label(self, text = "File selected: "+str(fileName),background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lfile.grid(row=2, column=4, columnspan=2, sticky=N+E+W)
         return
 
-    
+
+
     def resize(self,event) : # This functions dynamically resizes the displayed picture
         
         #print(event.width,self.Opic.winfo_width(),self.image_original.size)
@@ -192,6 +210,7 @@ class Interface(Frame) : # We define our window
             self.image_original = self.image_copy.resize((width, height),PIL.Image.ANTIALIAS)
             self.Oimage = PIL.ImageTk.PhotoImage(self.image_original)
             self.Opic.configure(image = self.Oimage)
+            #self.resizeable = False
         else :
             self.resizeable = True
 
@@ -229,8 +248,8 @@ class Interface(Frame) : # We define our window
         else :
             self.color = [250,250,250] # Default color is white
 
-        if len(str(self.Ofile.get())) != 0 :
-            self.file = "spectrograms/"+str(self.Ofile.get())
+        if len(str(self.file)) != 0 :
+            self.file = str(self.file)
 
 
             ##/////////////////////##
@@ -433,6 +452,7 @@ class Interface(Frame) : # We define our window
 
 
 
+
 pic = "default.png"
 
 # GUI initialization
@@ -454,7 +474,6 @@ interface.printOnConsole("Waiting for instructions...")
 # Initialization and launching of the threads
 
 interface.mainloop()
-
 
 
 
