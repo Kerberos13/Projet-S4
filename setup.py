@@ -6,10 +6,10 @@ import sys
 try :
     import pip
 except ImportError:
-    import scripts.get-pip
+    from scripts import getPip
     print("No module named pip - Error.")
     print("Installing Pip...")
-    scripts.get-pip.main()
+    getPip.main()
 
 
 def update():
