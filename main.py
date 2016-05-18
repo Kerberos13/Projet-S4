@@ -5,8 +5,14 @@
 import sys,os,numpy
 sys.path.insert(0,'scripts/')
 
-import sign_detect2,reass,resize
+import sign_detect2,reass,resize,use_CNN
 from tools import *
+try :
+    import PIL,numpy,scipy,theano
+except ImportError :
+    print("Pillow, Numpy, Scipy and Theano dependancies must be installed. Try running the setup.py script - Fatal Error.\n")
+    sys.exit()
+
 
 
 # This is the main function of the whole project and brings it all together
@@ -30,27 +36,36 @@ def main(filepath, threshold, margin, boxSize, color) :
     H = 37 # Dimension of the ANN along the vertical axis (height)
     
     #CNN_input = numpy.ndarray()
-    
+   
+    nb = 0
     for elt in signals :
 
         windows = resize.main(elt,W,H) # Resizing of detected signals
 
         # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
         # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
-        """
+        
         v,h = windows.shape[0],windows.shape[1]
-        tmp = numpy.ndarray()
-        for i in range(0,v) :
-            tmp = numpy.hstack((tmp,windows(i,0:h)))
-              
-        CNN_input = numpy.vstack((CNN_input,tmp))
-        """
+        tmp = numpy.ndarray((1,h),dtype="float32")
+        tmp[0,0:h] = windows[0,0:h]
+        for i in range(1,v) :
+            #print(tmp.shape,windows[i,0:h].shape)
+            tmp = numpy.hstack((tmp,windows[i:i+1,0:h]))
+          
+        if nb == 0 :
+            CNN_input = tmp
+        else :
+            CNN_input = numpy.vstack((CNN_input,tmp))
+        nb+=1
 
+        #print(CNN_input.shape)
         
 
-    """
-    labels = ann.main(CNN_input) # Classification of detected signals
-    """
+    
+    #labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
+    
+    #print(labels)
+
     reass.main(list(),margin,boxSize,color,False) # Reassembly of the different parts for a labeled spectrogram
     
     sys.exit()
