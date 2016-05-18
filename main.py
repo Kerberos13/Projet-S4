@@ -5,7 +5,8 @@
 import sys,os,numpy
 sys.path.insert(0,'scripts/')
 
-import sign_detect2,reass,resize,use_CNN
+import sign_detect2,reass,resize
+import use_CNN_compatible as use_CNN
 from tools import *
 try :
     import PIL,numpy,scipy,theano
@@ -61,12 +62,28 @@ def main(filepath, threshold, margin, boxSize, color) :
         #print(CNN_input.shape)
         
 
-    
-    #labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
-    
-    #print(labels)
+    print("Analysing signals...")
 
-    reass.main(list(),margin,boxSize,color,False) # Reassembly of the different parts for a labeled spectrogram
+    labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
+
+    labels2 = list()
+    for elt in labels :
+        if int(elt) == 0 :
+            tmp = "AM"
+        if int(elt) == 1 :
+            tmp = "FM"
+        if int(elt) == 2 :
+            tmp = "FSK"
+        if int(elt) == 3 :
+            tmp = "ASK"
+        if int(elt) == 4 :
+            tmp = "BLU"
+        labels2.append(tmp)
+
+    print("Done.")
+    #print(labels2)
+
+    reass.main(labels2,margin,boxSize,color,False) # Reassembly of the different parts for a labeled spectrogram
     
     sys.exit()
 

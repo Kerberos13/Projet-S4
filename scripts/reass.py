@@ -106,12 +106,13 @@ def main(labels, margin, size, color,gui) :
         if (elt[len(elt)-1-9:] == "signal.bmp") :
             nbSignals = nbSignals + 1
 
+    """
     if not os.path.exists("tmp/lbl.txt") : # We verify that the file exists
         print("Wrong Path - Reassembling without labels")
     else :
         labels = open("tmp/lbl.txt",'r')
         labels = labels.split("\n")
-
+    """
 
     if (len(labels) != nbSignals) :
         print("Wrong number of labels - Reassembling without labels\n")

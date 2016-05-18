@@ -6,13 +6,13 @@ import sys,os,time
 sys.path.insert(0,'scripts/')
 
 try :
-    import PIL,numpy
+    import PIL,numpy,scipy,theano
 except ImportError :
-    print("Pillow and Numpy dependancies must be installed. Try running the setup.py script - Fatal Error.\n")
+    print("Pillow, Numpy, Scipy and Theano dependancies must be installed. Try running the setup.py script - Fatal Error.\n")
     sys.exit()
 
-
 import sign_detect2,resize,reass
+import use_CNN_compatible as use_CNN
 from tools import *
 
 from threading import Thread
@@ -283,39 +283,63 @@ class Interface(Frame) : # We define our window
                 H = 37 # Dimension of the ANN along the vertical axis (height)
                 
                 #CNN_input = numpy.ndarray()
-                
+               
+                nb = 0
                 for elt in signals :
                     if not self.cancel.get() :
                         self.printOnConsole("Optimizing signals...")
                         windows = resize.main(elt,W,H) # Resizing of detected signals
                         self.printOnConsole("Done.")
+                        
+                        # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
+                        # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
+                        v,h = windows.shape[0],windows.shape[1]
+                        tmp = numpy.ndarray((1,h),dtype="float32")
+                        tmp[0,0:h] = windows[0,0:h]
+                        for i in range(1,v) :
+                            #print(tmp.shape,windows[i,0:h].shape)
+                            tmp = numpy.hstack((tmp,windows[i:i+1,0:h]))
+                          
+                        if nb == 0 :
+                            CNN_input = tmp
+                        else :
+                            CNN_input = numpy.vstack((CNN_input,tmp))
+                        nb+=1
+                        
                     else :
                         self.printOnConsole("Fatal Error: Aborting Signal optimisation")
                         self.switchToCompute()
 
-                    # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
-                    # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
-                    """
-                    v,h = windows.shape[0],windows.shape[1]
-                    tmp = numpy.ndarray()
-                    for i in range(0,v) :
-                        tmp = numpy.hstack((tmp,windows(i,0:h)))
-                          
-                    CNN_input = numpy.vstack((CNN_input,tmp))
-                    """
-               
-                """
+
+
                 if not self.cancel.get() :
                     self.printOnConsole("Analysing signals...")
-                    labels = ann.main(CNN_input) # Classification of detected signals
+                    labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
+     
+                    labels2 = list()
+                    for elt in labels :
+                        if int(elt) == 0 :
+                            tmp = "AM"
+                        if int(elt) == 1 :
+                            tmp = "FM"
+                        if int(elt) == 2 :
+                            tmp = "FSK"
+                        if int(elt) == 3 :
+                            tmp = "ASK"
+                        if int(elt) == 4 :
+                            tmp = "BLU"
+                        labels2.append(tmp)
+
                     self.printOnConsole("Done.")
+
                 else :
-                    self.printOnConsole("Fatal Error: Aborting Signal classification",True)
-                """
+                    self.printOnConsole("Fatal Error: Aborting Signal Classification")
+                    self.switchToCompute()
+                
 
                 if not self.cancel.get() :
                     self.printOnConsole("Merging files...")
-                    reass.main(list(),self.margin,self.boxWidth,self.color,True) # Reassembly of the different parts for a labeled spectrogram
+                    reass.main(labels2,self.margin,self.boxWidth,self.color,True) # Reassembly of the different parts for a labeled spectrogram
                     self.printOnConsole("Done.")
                     self.setImage("tmp/spectrogram.jpg")
                     self.switchToCompute()
