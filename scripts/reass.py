@@ -137,6 +137,7 @@ def main(labels, margin, size, color,gui) :
         if (i == 1) :
             pic = picture2
         else :
+            #print(pic.shape,picture2.shape)
             pic = merge(pic,picture2)
         closef(picture)
 

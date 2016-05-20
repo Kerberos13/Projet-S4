@@ -10,7 +10,7 @@
 import os,sys
 from math import floor
 from shutil import copyfile as cp
-from random import randint
+from random import shuffle
 
 
 
@@ -38,7 +38,7 @@ def main(folderToExplore,TrainPerc,TestPerc,ValidPerc) :
         files = os.listdir(folderToExplore)
         files2 = list()
         for elt in files :
-            if len(elt) != 0 and elt.endswith(".bmp") :
+            if len(elt) != 0 and (elt.endswith(".bmp") or elt.endswith(".jpg")):
                 files2.append(elt)
 
 
@@ -47,7 +47,12 @@ def main(folderToExplore,TrainPerc,TestPerc,ValidPerc) :
         nbValidation = len(files2) - (nbTraining + nbTest)
 
 
-        treated = list()
+        #treated = list()
+
+        treated = 0
+        indexes = list(range(0,len(files2)))
+        shuffle(indexes)
+
 
         for k in range(0,3) :
 
@@ -61,7 +66,7 @@ def main(folderToExplore,TrainPerc,TestPerc,ValidPerc) :
                 N = nbTraining + nbTest + nbValidation
                 Folder = ValidFolder
 
-
+            """
             while len(treated) < N :
                 
                 TREATED = False
@@ -84,6 +89,16 @@ def main(folderToExplore,TrainPerc,TestPerc,ValidPerc) :
                 treated.append(i)
 
                 print(str(len(treated))+"/"+str(len(files2)))
+                """            
+                
+            #treated = 0
+            while (treated < N and len(indexes) != 0) :
+                
+                i = indexes.pop()
+                cp(folderToExplore+"/"+files2[i],Folder+files2[i])
+                treated += 1
+
+                print(str(treated)+"/"+str(len(files2)))
 
     else :
         print("Wrong Path - Fatal Error.\n")

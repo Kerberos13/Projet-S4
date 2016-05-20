@@ -52,49 +52,6 @@ def crop(picture) :
 
 
 
-
-# This function normalises the pixels' value from 1 to 255 from a picture - We want 0 to be reserved for the zero-padding
-
-def norm2(picture) :
-
-    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
-
-        picture = numpy.asarray(picture)
-        picture.flags.writeable = True # This makes the picture writeable and not read-only
-        h,v = picture.shape[0],picture.shape[1] # We get the dimensions of the picture: horizontaly and verticaly
-
-        pmin = 255
-        pmax = 0
-
-
-        for i in range(0,h-1) : # We look for the minimum and maximum pixel value
-            for j in range(0,v-1) :
-                if (picture[i,j] <= pmin) :
-                    pmin = picture[i,j]
-                if (picture[i,j] >= pmax) :
-                    pmax = picture[i,j]
-
-        if(pmin != 1 and pmax != 255) :
-            alpha = floor(255/(pmax - pmin))
-            beta = pmin
-
-            for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
-                for j in range(0,v) :
-                    picture[i,j] = (picture[i,j] - beta)*alpha
-
-            #picture = Image.fromarray(picture,'L')
-    
-        return picture
-
-    else :
-        print("Wrong Type - Fatal Error.\n")
-        sys.exit()
-        return
-
-
-
-
-
 # This function returns the temporal mean of the picture as a vector
 
 def vec(picture) :
@@ -115,32 +72,6 @@ def vec(picture) :
         sys.exit()
         return
 
-
-
-
-
-# This functions normalizes the pixels' value from 0 to 255 from a list
-
-def norm1(vec,s) :
-
-    #print(vec)
-
-    pmin = min(vec)
-    pmax = max(vec)
-    alpha = floor(255/(pmax-pmin))
-    beta = pmin
-
-    vec2 = list()
-
-    if (s == "inv") :
-        a = 1
-    else :
-        a = 0
-
-    for elt in vec :
-        vec2.append(a*(255-(elt-beta)*alpha)+(1-a)*(elt-beta)*alpha)
-
-    return vec2
 
 
 
@@ -312,13 +243,13 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
     nb = 0
 
     for i in range(0,h): # We actually split the images
-        if(analyse[i] == tmp and i < h-1) : # The image continue
+        if(analyse[i] == tmp and i < h-1) : # The image continues
             b+=1
-        else : # The image changes
+        else : # The image changes or ends
             b+=1
             pic = spectrogram[0:v:1,a:b:1,0:3:1]
             name = TMP+filepath[len(filepath)-1]+"0"*(3-len(str(nb)))+str(nb)
-            if(analyse[i] == 1 or i == h-1) :
+            if(analyse[i-1] == 0):# or i == h-1) :
                 name += "_silence.bmp"
             else :
                 name += "_signal.bmp"

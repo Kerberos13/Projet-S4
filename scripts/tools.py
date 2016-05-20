@@ -113,6 +113,101 @@ def HSV(picture) :
 
 
 
+# This function normalises the pixels' value from 1 to 255 from a picture - We want 0 to be reserved for the zero-padding
+
+def norm2(picture) :
+
+    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
+
+        picture = numpy.asarray(picture)
+        picture.flags.writeable = True # This makes the picture writeable and not read-only
+        h,v = picture.shape[0],picture.shape[1] # We get the dimensions of the picture: horizontaly and verticaly
+
+
+        """ 
+        pmin = 255
+        pmax = 0
+
+
+        for i in range(0,h-1) : # We look for the minimum and maximum pixel value
+            for j in range(0,v-1) :
+                if (picture[i,j] <= pmin) :
+                    pmin = picture[i,j]
+                if (picture[i,j] >= pmax) :
+                    pmax = picture[i,j]
+        """
+        pmin = numpy.amin(picture,(0,1))
+        pmax = numpy.amax(picture,(0,1))
+        #print(pmin,pmax)
+
+        if pmax == pmin :
+            print("Empty image - Error.\n")
+
+
+        elif(pmin != 1 and pmax != 255) :
+            #alpha = floor(255/(pmax - pmin))
+            #beta = pmin
+            alpha = 255/(pmax-pmin)
+            beta = 0-alpha*pmin
+            #print(alpha,beta)
+
+            
+            for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
+                for j in range(0,v) :
+                    picture[i,j] = int(floor(picture[i,j]*alpha+beta))
+                    #picture[i,j] = (picture[i,j] - beta)*alpha
+            
+
+            #picture = numpy.floor(picture*alpha + beta)
+            #pmin = numpy.amin(picture,(0,1))
+            #pmax = numpy.amax(picture,(0,1))
+            #print(pmin,pmax)
+
+
+            picture = Image.fromarray(picture,'L')
+        
+        return picture
+
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
+
+
+# This functions normalizes the pixels' value from 0 to 255 from a list
+
+def norm1(vec,s) :
+
+    #print(vec)
+
+    pmin = min(vec)
+    pmax = max(vec)
+
+    if pmin == pmax :
+        print("Empty image - Error.\n")
+        vec2 = vec
+
+    elif pmax != 255 and pmin != 0 :
+        alpha = floor(255/(pmax-pmin))
+        beta = pmin
+
+        vec2 = list()
+
+        if (s == "inv") :
+            a = 1
+        else :
+            a = 0
+
+        for elt in vec :
+            vec2.append(a*(255-(elt-beta)*alpha)+(1-a)*(elt-beta)*alpha)
+
+    else :
+        vec2 = vec
+
+    return vec2
+
+
+
 # This functions does zero padding to a given picture (NxMx1 matrix)
 
 def padding1(pic,dimh,dimv) :

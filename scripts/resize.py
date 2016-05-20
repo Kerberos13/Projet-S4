@@ -18,7 +18,7 @@ def resize(picture,W,H) :
 
 
     if isinstance(picture, Image.Image) : # We verify that we effectively are working on an Image.Image object
-        h,v = picture.size[0],picture.size[1]
+        #h,v = picture.size[0],picture.size[1]
         #W = int(W*floor(h/W))
         #H = int(H*floor(v/H))
 
@@ -84,8 +84,12 @@ def main(signal,W,H) :
     # We convert the RGB picture to a hue matrix
 
     pic = BW(picture)
+    pic = Image.fromarray(pic,'L')
+    pic = norm2(pic)
     closef(picture)
 
+    #pic = Image.fromarray(pic,'L')
+    #pic.save("test2/test.bmp")
 
     pic = numpy.asarray(pic)
 

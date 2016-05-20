@@ -45,7 +45,11 @@ def main(filepath, threshold, margin, boxSize, color) :
 
         # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
         # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
-        
+ 
+        #pic = Image.fromarray(windows,'L')
+        #pic.save("tmp/test.bmp")
+
+       
         v,h = windows.shape[0],windows.shape[1]
         tmp = numpy.ndarray((1,h),dtype="float32")
         tmp[0,0:h] = windows[0,0:h]
@@ -59,6 +63,8 @@ def main(filepath, threshold, margin, boxSize, color) :
             CNN_input = numpy.vstack((CNN_input,tmp))
         nb+=1
 
+        #print(windows)
+        #print(CNN_input)
         #print(CNN_input.shape)
         
 
@@ -81,7 +87,7 @@ def main(filepath, threshold, margin, boxSize, color) :
         labels2.append(tmp)
 
     print("Done.")
-    #print(labels2)
+    #print(labels,labels2)
 
     reass.main(labels2,margin,boxSize,color,False) # Reassembly of the different parts for a labeled spectrogram
     
