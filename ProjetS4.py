@@ -293,13 +293,20 @@ class Interface(Frame) : # We define our window
                         
                         # CNN_input is a numpy.ndarray object caonting float32 dtype numbers.
                         # Each row corresponds to an image of which rows have been concatenated in order to form one long vector - in this case of 50x37 columns
+                        
                         v,h = windows.shape[0],windows.shape[1]
                         tmp = numpy.ndarray((1,h),dtype="float32")
                         tmp[0,0:h] = windows[0,0:h]
                         for i in range(1,v) :
                             #print(tmp.shape,windows[i,0:h].shape)
                             tmp = numpy.hstack((tmp,windows[i:i+1,0:h]))
-                          
+                         
+                        #v,h = windows.shape[0],windows.shape[1]
+                        #tmp = numpy.ndarray((1,h*v),dtype="float32")
+                        #tmp = numpy.asarray(windows,dtype="float32")
+                        #tmp = tmp.flatten()
+                        tmp = tmp/255
+        
                         if nb == 0 :
                             CNN_input = tmp
                         else :

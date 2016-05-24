@@ -150,7 +150,7 @@ output :
            BLU -> 4
 PS: please note that this funtion use all the classes defined in the file, pay attention when import.
 """
-def use_CNN(dataMatrix,params_file='scripts/params_mixed_5types_CPU.pkl',nkerns=[10, 15]):
+def use_CNN(dataMatrix,params_file='scripts/params_BdV2.5_mixed_50_37_BW_compatible.pkl',nkerns=[10, 15]):#'scripts/params_mixed_5types_CPU.pkl'
 
     #read param.pkl
     #layer0_params~layer3_params with w,b data,layer*_params[0] is data W，layer*_params[1] is data b
