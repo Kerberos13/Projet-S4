@@ -54,6 +54,7 @@ def openf(fileName) :
 
     if (os.path.exists(fileName)) : # We verify that the path is correct
         spectrogram = Image.open(fileName)
+        spectrogram = spectrogram.convert('RGB')
         return spectrogram
 
     else :
@@ -113,11 +114,54 @@ def HSV(picture) :
 
 
 
-# This function normalises the pixels' value from 1 to 255 from a picture - We want 0 to be reserved for the zero-padding
+# This function normalises the pixels' value from 0 to 170 from a numpy array (Hue component of a HSV diagram)
+
+def norm2HSV(picture) :
+
+    isArray = isinstance(picture,numpy.ndarray)
+
+    if isArray : # We verify that we effectively are working on an Image object
+
+        picture = numpy.asarray(picture)
+        picture.flags.writeable = True # This makes the picture writeable and not read-only
+        h,v = picture.shape[0],picture.shape[1] # We get the dimensions of the picture: horizontaly and verticaly
+        
+        pmin = numpy.amin(picture,(0,1))
+        pmax = numpy.amax(picture,(0,1))
+        #print(pmin,pmax)
+
+        picture = pmin + pmax - picture # We invert the values
+
+        if pmax == pmin :
+            print("Empty image - Error.\n")
+
+        elif(pmin != 0 and pmax != 170) :
+            alpha = 170/(pmax-pmin)
+            beta = 0-alpha*pmin
+            #print(alpha,beta)
+
+            picture = picture*alpha + beta
+            picture = numpy.floor(picture)
+            pmin = numpy.amin(picture,(0,1))
+            pmax = numpy.amax(picture,(0,1))
+            #print(pmin,pmax)
+
+        return picture
+
+    else :
+        print("Wrong Type - Fatal Error.\n")
+        sys.exit()
+        return
+
+
+# This function normalises the pixels' value from 0 to 255 from a picture
 
 def norm2(picture) :
 
-    if isinstance(picture,Image.Image) : # We verify that we effectively are working on an Image object
+    isPic = isinstance(picture,Image.Image)
+    isArray = isinstance(picture,numpy.ndarray)
+
+    if isPic or isArray : # We verify that we effectively are working on an Image object
 
         picture = numpy.asarray(picture)
         picture.flags.writeable = True # This makes the picture writeable and not read-only
@@ -145,8 +189,6 @@ def norm2(picture) :
 
 
         elif(pmin != 1 and pmax != 255) :
-            #alpha = floor(255/(pmax - pmin))
-            #beta = pmin
             alpha = 255/(pmax-pmin)
             beta = 0-alpha*pmin
             #print(alpha,beta)
@@ -163,8 +205,8 @@ def norm2(picture) :
             #pmax = numpy.amax(picture,(0,1))
             #print(pmin,pmax)
 
-
-            picture = Image.fromarray(picture,'L')
+            if isPic :
+                picture = Image.fromarray(picture,'L')
         
         return picture
 
@@ -187,7 +229,7 @@ def norm1(vec,s) :
         print("Empty image - Error.\n")
         vec2 = vec
 
-    elif pmax != 255 and pmin != 0 :
+    elif ((pmax != 255 and pmin != 0) or (s=="inv")) :
         alpha = floor(255/(pmax-pmin))
         beta = pmin
 

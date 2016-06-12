@@ -8,10 +8,10 @@ sys.path.insert(0,'scripts/')
 try :
     import PIL,numpy,scipy,theano
 except ImportError :
-    print("Pillow, Numpy, Scipy and Theano dependancies must be installed. Try running the setup.py script - Fatal Error.\n")
+    print("Pillow, Numpy, Scipy and Theano dependancies must be installed. Please try running the setup.py script - Fatal Error.\n")
     sys.exit()
 
-import sign_detect2,resize,reass
+import sign_detect2,resize,reass,spectrogram, testSdAForPicture
 import use_CNN_compatible as use_CNN
 from tools import *
 
@@ -90,7 +90,7 @@ class Interface(Frame) : # We define our window
         if os.path.exists(picture) :
             self.imagePath = str(picture)
         else :
-            self.imagePath = "default.png"
+            self.imagePath = "pictures/default.png"
         self.image_original = PIL.Image.open(self.imagePath)
         self.image_copy = self.image_original.copy()
         self.Oimage = PIL.ImageTk.PhotoImage(self.image_copy) # We use a label to display a picture
@@ -124,7 +124,7 @@ class Interface(Frame) : # We define our window
 
         # Box Width
         self.boxWidth = 6
-        self.LboxWidth = Label(self,text="Box Width",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.LboxWidth = Label(self,text="Box Thickness",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.LboxWidth.grid(row=7,column=3,padx=2,sticky=S+E+W)
         self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.OboxWidth.grid(row=8, column=3, padx=2, sticky=W+N+E)
@@ -158,6 +158,16 @@ class Interface(Frame) : # We define our window
         self.Oconsole.grid(row=4,column=4,sticky=N+E+W+S,columnspan=2,pady=5,padx=5)
 
 
+        # Artificial Neuronal Network Choice
+        self.ANN = "CNN"
+        if os.path.exists("pictures/radioCNN.png") :
+            self.ToggleButton = PIL.ImageTk.PhotoImage(PIL.Image.open("pictures/radioCNN.png").resize((56,23),PIL.Image.ANTIALIAS)) # We use a label to display a picture
+            self.OANN = Label(self, background=FRAME_BACKGROUND, image=self.ToggleButton)
+            self.OANN.grid(row=2,column=1,columnspan=1, padx=5, pady=5, sticky=N+W)
+            self.OANN.bind('<Button-1>',self.toggleANN)
+
+
+
         # Resizing column coefficients
         self.columnconfigure(1,weight=1,pad=10)
         self.columnconfigure(2,weight=1,pad=10)
@@ -180,11 +190,35 @@ class Interface(Frame) : # We define our window
         return
 
 
+    def toggleANN(self, event) :
+        
+        if self.ANN == "CNN" :
+            self.ANN = "SDA"
+            if os.path.exists("pictures/radioSDA.png") :
+                self.ToggleButton = PIL.ImageTk.PhotoImage(PIL.Image.open("pictures/radioSDA.png").resize((56,23),PIL.Image.ANTIALIAS)) # We use a label to display a picture
+        else :
+            self.ANN = "CNN"
+            if os.path.exists("pictures/radioCNN.png") :
+                self.ToggleButton = PIL.ImageTk.PhotoImage(PIL.Image.open("pictures/radioCNN.png").resize((56,23),PIL.Image.ANTIALIAS)) # We use a label to display a picture
+            
+        self.OANN = Label(self, background=FRAME_BACKGROUND, image=self.ToggleButton)
+        self.OANN.grid(row=2,column=1,columnspan=1, padx=10, pady=5, sticky=N+W)
+        self.OANN.bind('<Button-1>',self.toggleANN)
+
+        self.update()
+        
+        return
 
 
     def selectFile(self) :
         self.file = askopenfilename(initialdir = "spectrograms/", title = "Select file")
-        fileName = str(self.file)
+        
+        if int(sys.version[0]) == 2 :
+            fileName = str(self.file.encode("utf-8"))
+        else :
+            fileName = str(self.file)
+
+        self.file = fileName
         if len(fileName) != 0 :
             fileName = fileName.split("/")
             fileName = fileName.pop()
@@ -258,11 +292,15 @@ class Interface(Frame) : # We define our window
 
             
             self.switchToCancel()
-            self.setImage(str(self.file))
             self.setFrequency(str(self.file))
 
             if not self.cancel.get() :
                 self.printOnConsole("Opening "+str(self.file)+"...")
+                if (self.file.endswith(".wav") or self.file.endswith(".wav/")) :
+                    self.file = str(spectrogram.main(str(self.file)))
+
+                self.setImage(str(self.file))
+            
                 self.printOnConsole("Detecting signals...")
                 files = sign_detect2.main(str(self.file),self.margin,self.threshold,True) # Detection of signals on the spectrogram
                 self.printOnConsole("Done.")
@@ -321,8 +359,18 @@ class Interface(Frame) : # We define our window
 
                 if not self.cancel.get() :
                     self.printOnConsole("Analysing signals...")
-                    labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
-     
+                    #labels = use_CNN.use_CNN(CNN_input) # Classification of detected signals
+                 
+                    if self.ANN == "CNN" :
+                        ANN_to_use = 'scripts/parametres_V3/CNN/params_BdV2.5_mixed_50_37_BW_compatible.pkl'
+                        labels = use_CNN.use_CNN(CNN_input, ANN_to_use, [10,15]) # Classification of detected signals
+                    elif self.ANN == "SDA" :
+                        ANN_to_use = 'scripts/parametres_V3/autoencoder/params_BdV2.5_SDA_mix_50_37_BW_compatible.npy'#params_BdV2.5_SDA_mix_50_37_BW_compatible.pkl'
+                        labels = testSdAForPicture.test_SdAForPicture(CNN_input, ANN_to_use) # Classification of detected signals
+                    else :
+                        print("Unknown ANN type - Fatal Error.\n")
+                        return sys.exit()
+
                     labels2 = list()
                     for elt in labels :
                         if int(elt) == 0 :
@@ -351,7 +399,7 @@ class Interface(Frame) : # We define our window
                     self.setImage("tmp/spectrogram.jpg")
                     self.switchToCompute()
                 else :
-                    printOnConsole("Fatal Error: Aborting Reassembly")
+                    self.printOnConsole("Fatal Error: Aborting Reassembly")
                     self.switchToCompute()
 
 
@@ -484,7 +532,7 @@ class Interface(Frame) : # We define our window
 
 
 
-pic = "default.png"
+pic = "pictures/default.png"
 
 # GUI initialization
 

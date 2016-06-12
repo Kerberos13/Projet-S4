@@ -13,44 +13,6 @@ from tools import *
 
 
 
-# This function opens an existing spectrogram
-
-def openf(fileName) :
-
-    if (os.path.exists(fileName)) : # We verify that the path is correct
-        spectrogram = Image.open(fileName)
-        return spectrogram
-
-    else :
-        print("Incorrect Path - Fatal Error.\n")
-        sys.exit()
-        return
-
-
-
-
-# This function closes an existing spectrogram
-
-def closef(picture) :
-
-    if isinstance(picture, Image.Image) : # We verify that we effectively are working on an Image object
-        picture.close()
-    else :
-        print("Wrong Type - Fatal Error.\n")
-        sys.exit()
-    return
-
-
-
-
-# This functions crops the original picture to get rid of the white frame around the spectrogram in itself
-# Note : one possibility would be to save the frame in order to remerge it with the final image later
-
-def crop(picture) :
-    return picture
-
-
-
 
 # This function returns the temporal mean of the picture as a vector
 
@@ -172,6 +134,9 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
 
     spectrogram = numpy.asarray(picture)
 
+    #print(spectrogram)
+    #print(spectrogram.shape)
+
     v,h = spectrogram.shape[0],spectrogram.shape[1]
 
 
@@ -202,7 +167,7 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
         analyse = list()
         analyse2 = list()
         for k in range(0,h) :
-            if (abs(mean[k]-255) < 20*(7-threshold)) : # The hue is close to pure red
+            if ((255-mean[k] < 20*(7-threshold))): # or mean[k] < 5*(7-threshold)) : # The hue is close to pure red
                 analyse.append(1)
             else :
                 analyse.append(0)
@@ -213,6 +178,8 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
         print("Unknown Representation - Fatal Error.\n")
         sys.exit()
 
+
+    #print("ANALYSE",analyse)
 
     margin = int(floor(margin*len(analyse)/100)+1)
 
