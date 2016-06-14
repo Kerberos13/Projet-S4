@@ -99,7 +99,7 @@ def main(filePath) :
 
     print("Generating spectrogram...")
     
-    f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=256, noverlap = 128, scaling = 'density')#, mode = 'magnitude')
+    f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=512, scaling = 'density')#, mode = 'magnitude')
 
     #print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
 

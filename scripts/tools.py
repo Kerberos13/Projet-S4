@@ -194,13 +194,13 @@ def norm2(picture) :
             #print(alpha,beta)
 
             
-            #for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
-            #    for j in range(0,v) :
-            #        picture[i,j] = int(floor(picture[i,j]*alpha+beta))
+            for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
+                for j in range(0,v) :
+                    picture[i,j] = int(floor(picture[i,j]*alpha+beta))
             #        #picture[i,j] = (picture[i,j] - beta)*alpha
             
 
-            picture = numpy.floor(picture*alpha + beta)
+            #picture = numpy.floor(picture*alpha + beta)
             #pmin = numpy.amin(picture,(0,1))
             #pmax = numpy.amax(picture,(0,1))
             #print(pmin,pmax)
