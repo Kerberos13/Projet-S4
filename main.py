@@ -78,7 +78,7 @@ def main(filepath, threshold, margin, boxSize, color,ANN) :
 
             #print(windows)
             #print(CNN_input)
-            print(CNN_input.shape)
+            #print(CNN_input.shape)
             
 
         print("Analysing signals...")

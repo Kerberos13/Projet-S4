@@ -297,6 +297,7 @@ class Interface(Frame) : # We define our window
             if not self.cancel.get() :
                 self.printOnConsole("Opening "+str(self.file)+"...")
                 if (self.file.endswith(".wav") or self.file.endswith(".wav/")) :
+                    self.printOnConsole("Generating spectrogram...")
                     self.file = str(spectrogram.main(str(self.file)))
 
                 self.setImage(str(self.file))

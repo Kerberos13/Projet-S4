@@ -45,8 +45,8 @@ def read(filePath) :
             print("Unsupported number of channels - Fatal Error.\n")
             sys.exit()
 
-        print("DATA",data)
-        print("LENGTH",data.shape)
+        #print("DATA",data)
+        #print("LENGTH",data.shape)
 
        
         return data
@@ -64,7 +64,7 @@ def generateSignal() :
 
     signalI = list()
     signalQ = list()
-    N = 2048
+    N = 2**13
     E = 12.
 
     for i in range(0,N*16) :
@@ -94,21 +94,26 @@ def main(filePath) :
 
     print("Reading file...")
 
-    #data = read(filePath)
-    data = generateSignal()
+    data = read(filePath)
+    #data = generateSignal()
 
     print("Generating spectrogram...")
     
     f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=256, noverlap = 128, scaling = 'density')#, mode = 'magnitude')
 
-    #print("Spectrogram",spectrogram)
- 
-    spectrogram = 255*(numpy.arctan(0.9*(spectrogram-128)/256)+pi/2)/pi # This transfrom should help detection
+    #print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
 
+    spectrogram = norm2log(spectrogram)
+    #print("Spectrogram",spectrogram)
+    #print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
+
+
+    spectrogram = 255*(numpy.arctan(10*(spectrogram-128)/256)+pi/2)/pi # This transfrom should help detection
+    
 
     #print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
     spectrogram = norm2HSV(spectrogram) # We convert the spectrogram into a Hue matrix
-    print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
+    #print("MIN",numpy.amin(spectrogram),"MAX",numpy.amax(spectrogram))
 
 
     spectrogram = numpy.asarray(spectrogram,dtype=numpy.uint8)
@@ -126,7 +131,8 @@ def main(filePath) :
     #spectrogram = numpy.dstack(spectrogram,lum)
 
     spectrogram = PIL.Image.fromarray(spectrogram,'HSV')
-    spectrogram = spectrogram.convert('RGB') 
+    spectrogram = spectrogram.convert('RGB')
+    spectrogram = spectrogram.resize((1200,900),PIL.Image.ANTIALIAS)#(int(spectrogram.size[0]*.1),int(spectrogram.size[1]*.1)),PIL.Image.ANTIALIAS)
 
     filePath2 = filePath.split(".")
     filePath2[len(filePath2)-1] = "jpg"

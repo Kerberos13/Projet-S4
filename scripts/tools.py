@@ -194,13 +194,13 @@ def norm2(picture) :
             #print(alpha,beta)
 
             
-            for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
-                for j in range(0,v) :
-                    picture[i,j] = int(floor(picture[i,j]*alpha+beta))
-                    #picture[i,j] = (picture[i,j] - beta)*alpha
+            #for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
+            #    for j in range(0,v) :
+            #        picture[i,j] = int(floor(picture[i,j]*alpha+beta))
+            #        #picture[i,j] = (picture[i,j] - beta)*alpha
             
 
-            #picture = numpy.floor(picture*alpha + beta)
+            picture = numpy.floor(picture*alpha + beta)
             #pmin = numpy.amin(picture,(0,1))
             #pmax = numpy.amax(picture,(0,1))
             #print(pmin,pmax)
@@ -214,6 +214,51 @@ def norm2(picture) :
         print("Wrong Type - Fatal Error.\n")
         sys.exit()
         return
+
+
+
+# This functions normalizes the pixels' value of a picture, from 0 to 255 using a log function
+
+def norm2log(picture) :
+
+
+    isPic = isinstance(picture,Image.Image)
+    isArray = isinstance(picture,numpy.ndarray)
+
+    if isPic or isArray : # We verify that we effectively are working on an Image object
+
+        picture = numpy.asarray(picture)
+        picture.flags.writeable = True # This makes the picture writeable and not read-only
+        h,v = picture.shape[0],picture.shape[1] # We get the dimensions of the picture: horizontaly and verticaly
+
+        pmin = numpy.amin(picture,(0,1))
+        pmax = numpy.amax(picture,(0,1))
+        #print(pmin,pmax)
+
+        if pmax == pmin :
+            print("Empty image - Error.\n")
+
+
+        elif(pmin != 0 and pmax != 255) :
+            picture = numpy.log((picture+pmin+1))
+            pmin = numpy.amin(picture,(0,1))
+            pmax = numpy.amax(picture,(0,1))
+                
+            alpha = 255/(pmax-pmin)
+            beta = 0-alpha*pmin
+            #print(alpha,beta)
+
+
+            picture = numpy.floor(picture*alpha + beta)
+            #pmin = numpy.amin(picture,(0,1))
+            #pmax = numpy.amax(picture,(0,1))
+            #print(pmin,pmax)
+
+            if isPic :
+                picture = Image.fromarray(picture,'L')
+        
+    return picture
+
 
 
 # This functions normalizes the pixels' value from 0 to 255 from a list
