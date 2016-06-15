@@ -78,15 +78,6 @@ def denoise1(vec) :
 
 
 
-def denoise11(vec) :
-
-    f = [1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9.]
-
-    vec2 = conv1(vec,f)
-
-    return vec2
-
-
 
 
 # This function calculates the horizontal gradient of the picture
@@ -112,18 +103,12 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
     
     filename = filename.split(".")
     filename = ".".join(filename[:len(filename)-1])+"_"
-    #print("FILENAME",filename)
     filepath2= filename.split("/")
     filepath = list()
     for elt in filepath2 :
         if len(elt) != 0 :
             filepath.append(elt)
-    """ 
-    TMP = "/"+"/".join(filepath[:len(filepath)-1])+"/tmp/"
-
-    #print("TMP",TMP)
-
-    """
+    
     TMP = "tmp/"
 
 
@@ -140,8 +125,6 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
 
     spectrogram = numpy.asarray(picture)
 
-    #print(spectrogram)
-    #print(spectrogram.shape)
 
     v,h = spectrogram.shape[0],spectrogram.shape[1]
 
@@ -153,10 +136,6 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
             m = m + elt
         m = m/len(mean)
        
-        #print(mean)
-        #print(min(mean),m)
-
-        #m = min(mean)
 
         analyse = list()
         analyse2 = list()
@@ -185,7 +164,6 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
         sys.exit()
 
 
-    #print("ANALYSE",analyse)
 
     margin = int(floor(margin*len(analyse)/100)+1)
 
@@ -195,14 +173,12 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
             for k in range(0,i+margin+1) :
                 analyse2[k] = 1
 
-    #print("ANALYSE",analyse)
 
     for i in range(margin,h-margin) :
         if (analyse[i] == 1) :
             for k in range(i-margin,i+margin+1) :
                 analyse2[k] = 1
 
-    #print("ANALYSE",analyse2)
 
     for i in range(h-margin, h) :
         if (analyse[i] == 1) :
@@ -210,8 +186,6 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
                 #print(k,h)
                 #print("ANALYSE",analyse2)
                 analyse2[k] = 1
-
-    #print("ANALYSE",analyse2)
 
     analyse = analyse2
 
