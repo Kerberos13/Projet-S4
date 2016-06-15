@@ -188,22 +188,30 @@ def norm2(picture) :
             print("Empty image - Error.\n")
 
 
-        elif(pmin != 1 and pmax != 255) :
+        elif(pmin != 0 and pmax != 255) :
             alpha = 255/(pmax-pmin)
             beta = 0-alpha*pmin
             #print(alpha,beta)
-
             
+            #picture1=numpy.asarray(picture)
+
             for i in range(0,h) : # And we adjust them to improve overall contrast for edge detection
                 for j in range(0,v) :
                     picture[i,j] = int(floor(picture[i,j]*alpha+beta))
-            #        #picture[i,j] = (picture[i,j] - beta)*alpha
+                    #picture1[i,j] = int(floor(picture1[i,j]*alpha+beta))
             
 
-            #picture = numpy.floor(picture*alpha + beta)
-            #pmin = numpy.amin(picture,(0,1))
-            #pmax = numpy.amax(picture,(0,1))
-            #print(pmin,pmax)
+            #picture2 = numpy.floor(picture*alpha + beta)
+            #picture2 = numpy.asarray(picture2,dtype=numpy.uint)
+
+            #pmin = numpy.amin(picture2,(0,1))
+            #pmax = numpy.amax(picture2,(0,1))
+            #print("NORM2",pmin,pmax)
+            #print(picture2)
+            #print(picture1)
+            #print(numpy.abs(picture2-picture1))
+
+            #print(numpy.sum(numpy.abs(picture2-picture1)))
 
             if isPic :
                 picture = Image.fromarray(picture,'L')
