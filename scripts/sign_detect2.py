@@ -78,7 +78,13 @@ def denoise1(vec) :
 
 
 
+def denoise11(vec) :
 
+    f = [1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9., 1./9.]
+
+    vec2 = conv1(vec,f)
+
+    return vec2
 
 
 
@@ -189,18 +195,23 @@ def split1(filename,picture,mean,margin,threshold,representation) : # picture mu
             for k in range(0,i+margin+1) :
                 analyse2[k] = 1
 
+    #print("ANALYSE",analyse)
+
     for i in range(margin,h-margin) :
         if (analyse[i] == 1) :
             for k in range(i-margin,i+margin+1) :
                 analyse2[k] = 1
 
+    #print("ANALYSE",analyse2)
+
     for i in range(h-margin, h) :
         if (analyse[i] == 1) :
-            for k in range(1,i-margin-1) :
-                analyse2[h-k] = 1
+            for k in range(i-margin-1,h) :
+                #print(k,h)
+                #print("ANALYSE",analyse2)
+                analyse2[k] = 1
 
-
-    #print("ANALYSE",analyse)
+    #print("ANALYSE",analyse2)
 
     analyse = analyse2
 
