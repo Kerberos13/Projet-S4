@@ -140,6 +140,7 @@ class Interface(Frame) : # We define our window
 
 
         # Spectrogram
+        self.currentDir = "spectrograms/"
         self.file = ""
         #self.Lfile = Label(self, text = "Select a file",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         #self.Lfile.grid(row=2,column=4,sticky=N+E+W)
@@ -211,17 +212,21 @@ class Interface(Frame) : # We define our window
 
 
     def selectFile(self) :
-        self.file = askopenfilename(initialdir = "spectrograms/", title = "Select file")
+        self.file = askopenfilename(initialdir = self.currentDir, title = "Select file")
         
         if int(sys.version[0]) == 2 :
             fileName = str(self.file.encode("utf-8"))
         else :
             fileName = str(self.file)
 
+        #print(fileName)
+
         self.file = fileName
         if len(fileName) != 0 :
             fileName = fileName.split("/")
-            fileName = fileName.pop()
+            tmp = list(fileName)
+            fileName = tmp.pop()
+            self.currentDir = "/".join(tmp)
 
         self.Lfile.destroy()
         self.Lfile = Label(self, text = "File selected: "+str(fileName),background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
