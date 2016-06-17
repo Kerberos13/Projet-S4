@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # -*- coding: utf-8 -*-
 
 # The aim of this module is to bring together the python script and its GUI

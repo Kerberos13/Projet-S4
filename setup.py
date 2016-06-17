@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # -*- coding: utf-8 -*-
 
 # The aim of this module is to make the installation of some dependancies easier
