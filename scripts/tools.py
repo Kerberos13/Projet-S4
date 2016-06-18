@@ -282,9 +282,9 @@ def norm1(vec,s) :
         print("Empty image - Error.\n")
         vec2 = vec
 
-    elif ((pmax != 255 and pmin != 0) or (s=="inv")) :
+    elif ((pmax != 255 or pmin != 0) or (s=="inv")) :
         alpha = floor(255/(pmax-pmin))
-        beta = pmin
+        beta = 0-alpha*pmin
 
         vec2 = list()
 
@@ -294,7 +294,7 @@ def norm1(vec,s) :
             a = 0
 
         for elt in vec :
-            vec2.append(a*(255-(elt-beta)*alpha)+(1-a)*(elt-beta)*alpha)
+            vec2.append(a*(255-(elt*alpha+beta))+(1-a)*(elt*alpha+beta))
 
     else :
         vec2 = vec
@@ -403,6 +403,98 @@ def unpad3(picture,margin) :
             picture2 = numpy.delete(picture2,-i,0) # We delete the row i
 
     return picture2
+
+
+
+# This function returns the temporal mean of the picture as a vector
+
+def vec(picture) :
+
+    if(isinstance(picture,numpy.ndarray)) :
+        v,h = picture.shape[0],picture.shape[1]
+        vec = list()
+        for j in range(0,h) :
+            tmp = 0
+            for i in range(0,v) :
+                tmp = tmp + picture[i,j]
+            vec.append(floor(tmp/h))
+
+        return vec
+
+    else :
+        print("Wrong type - Fatal Error.\n")
+        sys.exit()
+        return
+
+
+
+
+# Returns the vector convolution of vec*f
+
+def conv1(vec,f) :
+
+    l = int(floor((len(f)-1)/2))
+    m = len(vec)
+
+    vec2 = list()
+
+    for i in range(0,l) :
+        vec2.append(vec[i])
+
+    for j in range(l,m-l) :
+        tmp = 0
+        for i in range(-l,l+1) :
+            tmp = tmp + f[l-i]*vec[j+i]
+        vec2.append(floor(tmp))
+    
+    for i in range(m-l,m) :
+        vec2.append(vec[i])
+   
+    return vec2
+
+
+
+
+
+# This function uses a lowpass filter to limitate possible noise on a vector
+
+def denoise1(vec) :
+    
+    f = [1./3.,1./3.,1./3.]
+
+    vec2 = conv1(vec,f)
+
+    return vec2
+
+
+
+
+# This function calculates the horizontal gradient of the picture
+
+def hgrad1(vec) :
+
+    f = [-1., 0., 1.]
+
+    vec2 = conv1(vec,f)
+
+    return vec2
+
+
+
+
+
+# This function merges the picture ndarray at the right of the pic ndarray
+
+def merge(pic,picture) :
+ 
+    pic = numpy.hstack((pic,picture))
+
+    return pic
+
+
+
+
+
 
 
 

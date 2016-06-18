@@ -69,19 +69,6 @@ def lbl(picture,label,color,size) :
 
 
 
-
-# This function merges the picture ndarray at the right of the pic ndarray
-
-def merge(pic,picture) :
- 
-    pic = numpy.hstack((pic,picture))
-
-    return pic
-
-
-
-
-
 # This function cleans the tmp folder
 
 def clean(files) :
