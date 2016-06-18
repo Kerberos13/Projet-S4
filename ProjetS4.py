@@ -120,7 +120,7 @@ class Interface(Frame) : # We define our window
         self.margin = 12
         self.Lmargin = Label(self,text="Margin",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.Lmargin.grid(row=7,column=2,padx=2,sticky=S+E+W)   # Sticky allows to place a widget off-centered from its original position, according to the cardinal points
-        self.Omargin = Spinbox(self, from_= 5, to = 25, increment = 5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
+        self.Omargin = Spinbox(self, from_= 10, to = 25, increment = 5, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Omargin.grid(row=8,column=2,padx=2,sticky=N+E+W)
 
 
