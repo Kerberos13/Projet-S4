@@ -166,13 +166,14 @@ def detectArtefacts(spectrogram, max_size, threshold) :
 
     analyse0 = list()
     analyse2 = list()
+    signals = list()
     for k in range(0,h) :
         if ((255-tmp[k] < 20*(7-threshold))): # or mean[k] < 5*(7-threshold)) : # The hue is close to pure red
             analyse0.append(1)
         else :
             analyse0.append(0)
         analyse2.append(0)
-
+        signals.append(0)
 
     analyse = list(analyse0)
     for i in range(0,h) :
@@ -185,25 +186,22 @@ def detectArtefacts(spectrogram, max_size, threshold) :
                     else :
                         for l in range(i,k+1) :
                             analyse[l] = 0
+                            signals[l] = 1
                     break
-    
+
     
     l = 9 # 2*3*l is the number of points on which the new hue value will be calculated
     Width = 2*(l+max_size) - 1 + max_size - 1 # This is the width of the extracted matrices
     margin = l+max_size-1
 
-    print("ANALYSE",analyse)
+    #print("ANALYSE",analyse)
 
     for i in range(0,margin) :
         if (analyse[i] == 1) :
-            end_signal = False
             new_signal = False
-            for k in range(0,i+margin+1) :
-                if analyse[k] == 0 :
-                    end_signal = True
-                elif end_signal :
+            for k in range(0,margin) :
+                if signals[k] == 1 :
                     new_signal = True
-                    break
             if not new_signal :
                 for k in range(0,i+margin+1) :
                     analyse2[k] = 1
@@ -211,24 +209,13 @@ def detectArtefacts(spectrogram, max_size, threshold) :
 
     for i in range(margin,h-margin) :
         if (analyse[i] == 1) :
-            end_signalA = False
-            new_signalA = False
-            for k in range(i-margin,i) :
-                if analyse[k] == 1  :
-                    end_signalA = True
-                elif end_signalA :
-                    new_signalA = True
-                    break
-            end_signalB = False
-            new_signalB = False
-            for k in range(i,i+margin+1) :
-                if analyse[k] == 0 :
-                    end_signalB = True
-                elif end_signalB :
-                    new_signalB = True
-                    break
+            new_signal = False
+            for k in range(i-margin,i+margin+1) :
+                if signals[k] == 1 :
+                    new_signal = True
 
-            if new_signalA == False and new_signalB == False :
+            if not new_signal :
+                #if new_signalA == False and new_signalB == False :
                 #if True :
                 for k in range(i-margin,i+margin+1) :
                     analyse2[k] = 1
@@ -236,19 +223,15 @@ def detectArtefacts(spectrogram, max_size, threshold) :
 
     for i in range(h-margin, h) :
         if (analyse[i] == 1) :
-            end_signal = False
             new_signal = False
             for k in range(i-margin-1,h) :
-                if analyse[k] == 1 :
-                    end_signal = True
-                elif end_signal :
+                if signals[k] == 1 :
                     new_signal = True
-                    break
             if not new_signal :
                 for k in range(i-margin-1,h) :
                     analyse2[k] = 1
 
-    print("ANALYSE",analyse2)
+    #print("ANALYSE",analyse2)
 
     analyse = analyse2
 
