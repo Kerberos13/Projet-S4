@@ -30,11 +30,6 @@ def read(filePath) :
 
         a = numpy.fromstring(a,dtype=numpy.int16)
 
-        #print("NbChannels", nbChannels)
-        #print("NbFrames",nbFrames)
-        #print("SHAPE",a.shape,nbFrames*nbChannels)
-        #print("RAW_DATA",a)
-
         l = int(a.shape[0])
         if nbChannels == 2 :
             if l%2 == 0 :
@@ -47,10 +42,6 @@ def read(filePath) :
         else :
             print("Unsupported number of channels - Fatal Error.\n")
             sys.exit()
-
-        #print("DATA",data)
-        #print("LENGTH",data.shape)
-
        
         return data
     
@@ -76,14 +67,11 @@ def generateSignal() :
         C = E*sin(2*pi*300*i/N)
         signalI.append(A*B)
         signalQ.append(A*C)
-        #print(i,A,B,A*B,cos(pi*i/6))
         
     signalI = numpy.asarray(signalI, dtype=numpy.int16)
     signalQ = numpy.asarray(signalQ, dtype=numpy.int16)
 
     signal = signalI+1j*signalQ
-
-    #print(signal)
 
     return signal
 
@@ -190,34 +178,77 @@ def detectArtefacts(spectrogram, max_size, threshold) :
     for i in range(0,h) :
         if analyse[i] == 1 :
             for k in range(i,h) :
-                if analyse0[k] == 0 :
+                if analyse0[k] == 0 or k == h-1 :
                     if abs(k-i) <= max_size : # We only consider small enough signals that can be artefacts
-                        for l in range(i,k) :
+                        for l in range(i,k+1) :
                             analyse[l] = 1
                     else :
-                        for l in range(i,k) :
+                        for l in range(i,k+1) :
                             analyse[l] = 0
                     break
     
     
-    l = 10 # 2*l is the number of points on which the new hue value will be calculated
+    l = 7 # 2*3*l is the number of points on which the new hue value will be calculated
     Width = 2*(l+max_size) - 1 + max_size - 1 # This is the width of the extracted matrices
     margin = l+max_size-1
 
+    print("ANALYSE",analyse)
+
     for i in range(0,margin) :
         if (analyse[i] == 1) :
+            end_signal = False
+            new_signal = False
             for k in range(0,i+margin+1) :
-                analyse2[k] = 1
+                if analyse[k] == 0 :
+                    end_signal = True
+                elif end_signal :
+                    new_signal = True
+                    break
+            if not new_signal :
+                for k in range(0,i+margin+1) :
+                    analyse2[k] = 1
+
 
     for i in range(margin,h-margin) :
         if (analyse[i] == 1) :
-            for k in range(i-margin,i+margin+1) :
-                analyse2[k] = 1
+            end_signalA = False
+            new_signalA = False
+            for k in range(i-margin,i) :
+                if analyse[k] == 1  :
+                    end_signalA = True
+                elif end_signalA :
+                    new_signalA = True
+                    break
+            end_signalB = False
+            new_signalB = False
+            for k in range(i,i+margin+1) :
+                if analyse[k] == 0 :
+                    end_signalB = True
+                elif end_signalB :
+                    new_signalB = True
+                    break
+
+            if new_signalA == False and new_signalB == False :
+                #if True :
+                for k in range(i-margin,i+margin+1) :
+                    analyse2[k] = 1
+
 
     for i in range(h-margin, h) :
         if (analyse[i] == 1) :
+            end_signal = False
+            new_signal = False
             for k in range(i-margin-1,h) :
-                analyse2[k] = 1
+                if analyse[k] == 1 :
+                    end_signal = True
+                elif end_signal :
+                    new_signal = True
+                    break
+            if not new_signal :
+                for k in range(i-margin-1,h) :
+                    analyse2[k] = 1
+
+    print("ANALYSE",analyse2)
 
     analyse = analyse2
 
@@ -250,9 +281,62 @@ def detectArtefacts(spectrogram, max_size, threshold) :
 
 
 
+
+# If a signal is splitted on the edges of the spectrogram, it is then reassembled into one piece
+
+def centering(spectrogram, threshold, margin) :
+
+    mean = vec(spectrogram)
+    mean = norm1(mean,"inv")
+    mean = denoise1(mean)
+    h = len(mean)
+    v = spectrogram.shape[0]
+
+    analyse = list()
+    analyse2 = list()
+    for k in range(0,h) :
+        if ((255-mean[k] < 20*(7-threshold))): # or mean[k] < 5*(7-threshold)) : # The hue is close to pure red
+            analyse.append(1)
+        else :
+            analyse.append(0)
+
+        analyse2.append(0)
+
+    margin = int(floor(margin*len(analyse)/100)+1)
+
+    for i in range(0,margin) :
+        if (analyse[i] == 1) :
+            for k in range(0,i+margin+1) :
+                analyse2[k] = 1
+
+    for i in range(margin,h-margin) :
+        if (analyse[i] == 1) :
+            for k in range(i-margin,i+margin+1) :
+                analyse2[k] = 1
+
+    for i in range(h-margin, h) :
+        if (analyse[i] == 1) :
+            for k in range(i-margin-1,h) :
+                analyse2[k] = 1
+
+    analyse = analyse2
+
+    if analyse[0] == 1 or analyse[h] == 1 : # A signal is splitted
+        i = 0
+        while analyse[i] != 0 or i < margin :
+            i+=1
+        spectrogram2 = merge(spectrogram[0:v,i:h],spectrogram[0:v,0:i])
+
+
+    return spectrogram2
+
+
+
+
+
 # This brings it all together and generates a spectrogram
 
-def main(filePath, threshold) :
+def main(filePath, threshold, margin) :
 
     print("Reading file...")
 
@@ -262,7 +346,6 @@ def main(filePath, threshold) :
     print("Generating spectrogram...")
     
     f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=512, scaling = 'density')#, mode = 'magnitude')
-    #spectrogram = numpy.resize(spectrogram,(8000,6000))
 
     spectrogram = norm2log(spectrogram)
     spectrogram = 255*(numpy.arctan(10*(spectrogram-128)/256)+pi/2)/pi # This transfrom should help detection
@@ -279,14 +362,16 @@ def main(filePath, threshold) :
     spectrogram = PIL.Image.fromarray(spectrogram,'HSV')
     spectrogram = spectrogram.resize((800,600),PIL.Image.ANTIALIAS)#(int(spectrogram.size[0]*.1),int(spectrogram.size[1]*.1)),PIL.Image.ANTIALIAS)
 
+
     print("Removing artefacts...")
-
-    max_size = int(ceil(8*(800/1200)))
-
+ 
     spectrogram = numpy.asarray(spectrogram,dtype=numpy.uint8)
     a,b = spectrogram.shape[0],spectrogram.shape[1]
     
+    max_size = int(ceil(8*(800/1200)))
+   
     spectrogram2 = spectrogram[0:a:1,0:b:1,0]
+    spectrogram2 = centering(spectrogram2, threshold, margin)
     spectrogram2 = detectArtefacts(spectrogram2, max_size, threshold)
     
     spectrogram = numpy.dstack([spectrogram2,spectrogram[0:a,0:b,1],spectrogram[0:a,0:b,2]])
