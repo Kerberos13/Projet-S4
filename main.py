@@ -24,7 +24,7 @@ def main(filepath, threshold, margin, boxSize, color,ANN) :
 
     if (os.path.exists(filepath)) :
         if (filepath.endswith(".wav") or filepath.endswith(".wav/")) :
-            filepath = spectrogram.main(filepath)
+            filepath = spectrogram.main(filepath, threshold)
 
         files = sign_detect2.main(os.path.abspath(filepath),margin,threshold,False) # Detection of signals on the spectrogram
         #print(files)
