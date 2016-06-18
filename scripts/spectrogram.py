@@ -188,7 +188,7 @@ def detectArtefacts(spectrogram, max_size, threshold) :
                     break
     
     
-    l = 7 # 2*3*l is the number of points on which the new hue value will be calculated
+    l = 9 # 2*3*l is the number of points on which the new hue value will be calculated
     Width = 2*(l+max_size) - 1 + max_size - 1 # This is the width of the extracted matrices
     margin = l+max_size-1
 
@@ -323,7 +323,7 @@ def centering(spectrogram, threshold, margin) :
 
     if analyse[0] == 1 or analyse[h] == 1 : # A signal is splitted
         i = 0
-        while analyse[i] != 0 or i < margin :
+        while analyse[i] != 0 and i < margin :
             i+=1
         spectrogram2 = merge(spectrogram[0:v,i:h],spectrogram[0:v,0:i])
 
