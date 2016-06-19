@@ -24,7 +24,7 @@ def install(package):
     return
 
 
-if __name__ == '__main__':
+def main() :
     print("Updating pip...")
     update()
     print("Installing dependancies for ProjetS4...")
@@ -33,4 +33,8 @@ if __name__ == '__main__':
     install('Scipy')
     install('Theano')
     print("Done")
+    return
 
+
+if __name__ == '__main__':
+    main()
