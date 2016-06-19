@@ -1,6 +1,5 @@
 #! /usr/bin/env python
-
-# -*- coding: utf-8 -*-
+# -*- coding : utf-8 -*-
 
 # The aim of this module is to bring together the python script and its GUI
 
@@ -551,7 +550,7 @@ combostyle = Style() # We create a ttk style for all comboboxes
 combostyle.theme_create('combostyle', parent='alt',settings = {'TCombobox':{'configure':{'selectbackground': WIDGET_BACKGROUND,'fieldbackground': WIDGET_BACKGROUND,'background': WIDGET_BACKGROUND, 'selectforeground': WIDGET_FOREGROUND, 'fieldforeground': WIDGET_FOREGROUND,'foreground': WIDGET_FOREGROUND}}})
 combostyle.theme_use('combostyle') 
 
-window.title("ProjetS4 - 52 : Utilisation de réseaux neuronaux profonds pour l'analyse du spectre radio")
+window.title("Project 52 - Telecom Bretagne: Usage of deep neuronal networks for radio spectrum analysis")
 window.option_add("*background",FRAME_BACKGROUND)
 
 interface = Interface(window,pic)
