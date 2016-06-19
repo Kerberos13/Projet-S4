@@ -22,16 +22,16 @@ def read(filePath) :
     
     if os.path.exists(filePath) :
         
-        f = wave.open(filePath,'rb')
+        f = wave.open(filePath,'rb') # We use the wave library to read .wav files efficiently
         nbChannels = f.getnchannels()
         nbFrames = f.getnframes()
         a = f.readframes(nbFrames)
         f.close()
 
-        a = numpy.fromstring(a,dtype=numpy.int16)
+        a = numpy.fromstring(a,dtype=numpy.int16) # We convert the byte stream into a numpy array
 
         l = int(a.shape[0])
-        if nbChannels == 2 :
+        if nbChannels == 2 : # We then convert it to a complex signal according to the number of channels
             if l%2 == 0 :
                 data = a[0:l:2]+1j*a[1:l:2]
             else :
@@ -84,7 +84,7 @@ def removeArtefacts(spectrogram, max_size, l) :
 
     h = list()
     n = 2*l+2*max_size-1
-    for i in range(0,n) :
+    for i in range(0,n) : # We generate the convolution filter
         if i <= l-1 :
             h.append(exp(-(8*(l/2-i)/l)**2))
         elif i >= n-l :
@@ -95,7 +95,7 @@ def removeArtefacts(spectrogram, max_size, l) :
     h = numpy.asarray(h)
     h = numpy.vstack((h,h,h))
 
-    p = numpy.sum(h,(0,1))
+    p = numpy.sum(h,(0,1)) # We norm the convolution filter
     h = h/p
 
     #print(numpy.sum(h,(0,1)))
@@ -103,9 +103,9 @@ def removeArtefacts(spectrogram, max_size, l) :
 
     spectrogram = scipy.signal.convolve2d(spectrogram, h, boundary='symm', mode='same')
 
-    spectrogram = numpy.asarray(spectrogram, dtype = numpy.uint8)
+    spectrogram = numpy.asarray(spectrogram, dtype = numpy.uint8) # We convert the result back to a numpy array, directly usable by the PIL library
 
-    print(numpy.sum(spectrogram,(0,1)))
+    #print(numpy.sum(spectrogram,(0,1)))
 
     return spectrogram
 
@@ -116,52 +116,7 @@ def removeArtefacts(spectrogram, max_size, l) :
 
 def detectArtefacts(spectrogram, max_size, threshold) :
 
-    """
-    tmp = vec(spectrogram)
-
-    tmp = hgrad1(tmp) # This calculates the horizontal gradient ie detects if the hue changes or not
-    analyse = list()
-    for elt in tmp :
-        analyse.append(abs(elt))
-
-    analyse = denoise1(analyse)
-    analyse = norm1(analyse, "normal")
-  
-    print("ANALYSE",analyse)
-    #print("MIN",min(analyse),"MAX",max(analyse))
-
-    m = 0
-    for elt in analyse :
-        m = m +elt
-    m = m/len(analyse) # This is the average hue change in the vector analyse
-
-
-    analyse2 = list()
-    for elt in analyse :
-        if elt >= min(200,2*m) : # We detect a possible artefact
-            analyse2.append(1)
-        else :
-            analyse2.append(0)
-
-    print("ANALYSE2",analyse2)
-
-    analyse3 = list(analyse2)
-    for i in range(0,len(analyse2)) :
-        if analyse2[i] == 1 :
-            for k in range(i,len(analyse2)) :
-                if analyse2[k] == 1 :
-                    if abs(k-i) <= max_size :
-                        for l in range(i,k) :
-                            analyse3[l] = 1
-                    else :
-                        for l in range(i,k) :
-                            analyse3[l] = 0
-                    break
-
-    print("ANALYSE3",analyse3)
-    """
- 
-    tmp = vec(spectrogram)
+    tmp = vec(spectrogram) # We start by computing the mean along the time axis
     tmp = norm1(tmp,"inv")
     tmp = denoise1(tmp)
     h = len(tmp)
@@ -170,7 +125,7 @@ def detectArtefacts(spectrogram, max_size, threshold) :
     analyse2 = list()
     signals = list()
     for k in range(0,h) :
-        if ((255-tmp[k] < 20*(7-threshold))): # or mean[k] < 5*(7-threshold)) : # The hue is close to pure red
+        if ((255-tmp[k] < 20*(7-threshold))): # The hue is close to pure red
             analyse0.append(1)
         else :
             analyse0.append(0)
@@ -271,7 +226,7 @@ def detectArtefacts(spectrogram, max_size, threshold) :
 
 def centering(spectrogram, threshold, margin) :
 
-    mean = vec(spectrogram)
+    mean = vec(spectrogram) # We start by computing the mean along the time axis
     mean = norm1(mean,"inv")
     mean = denoise1(mean)
     h = len(mean)
@@ -280,7 +235,7 @@ def centering(spectrogram, threshold, margin) :
     analyse = list()
     analyse2 = list()
     for k in range(0,h) :
-        if ((255-mean[k] < 20*(7-threshold))): # or mean[k] < 5*(7-threshold)) : # The hue is close to pure red
+        if ((255-mean[k] < 20*(7-threshold))): # The hue is close to pure red
             analyse.append(1)
         else :
             analyse.append(0)
@@ -330,22 +285,22 @@ def main(filePath, threshold, margin) :
 
     print("Generating spectrogram...")
     
-    f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=512, scaling = 'density')#, mode = 'magnitude')
+    f,t,spectrogram = scipy.signal.spectrogram(data, nperseg=512, scaling = 'density')
 
-    spectrogram = norm2log(spectrogram)
-    spectrogram = 255*(numpy.arctan(10*(spectrogram-128)/256)+pi/2)/pi # This transfrom should help detection
+    spectrogram = norm2log(spectrogram) # We use a log norm to retrieve the signals among the noise
+    spectrogram = 255*(numpy.arctan(10*(spectrogram-128)/256)+pi/2)/pi # This transfrom should help detection by maximizing mid-tones details
     spectrogram = norm2HSV(spectrogram) # We convert the spectrogram into a Hue matrix
 
     spectrogram = numpy.asarray(spectrogram,dtype=numpy.uint8)
     spectrogram = spectrogram.transpose()
 
-    lum = numpy.ones([spectrogram.shape[0],spectrogram.shape[1]],dtype=numpy.uint8)
+    lum = numpy.ones([spectrogram.shape[0],spectrogram.shape[1]],dtype=numpy.uint8) # We now assemble the complete spectrogram picture
     sat = 255*lum
     lum = 200*lum
 
     spectrogram = numpy.dstack([spectrogram,sat,lum])
     spectrogram = PIL.Image.fromarray(spectrogram,'HSV')
-    spectrogram = spectrogram.resize((800,600),PIL.Image.ANTIALIAS)#(int(spectrogram.size[0]*.1),int(spectrogram.size[1]*.1)),PIL.Image.ANTIALIAS)
+    spectrogram = spectrogram.resize((800,600),PIL.Image.ANTIALIAS) # And we resize it to be able 1) to save it and 2) to reduce the computation time
 
 
     print("Removing artefacts...")
@@ -353,15 +308,16 @@ def main(filePath, threshold, margin) :
     spectrogram = numpy.asarray(spectrogram,dtype=numpy.uint8)
     a,b = spectrogram.shape[0],spectrogram.shape[1]
     
-    max_size = int(ceil(8.*(800./1200.)))
+    max_size = int(ceil(8.*(800./1200.))) # This is the constated average artefact size, relatively to the spectrogram's size
+    #print("MAX_SIZE",max_size)
 
     spectrogram2 = spectrogram[0:a:1,0:b:1,0]
-    spectrogram2 = centering(spectrogram2, threshold, margin)
-    spectrogram2 = detectArtefacts(spectrogram2, max_size, threshold)
+    spectrogram2 = centering(spectrogram2, threshold, margin) # We make sure that no signal is splitted in our spectrogram
+    spectrogram2 = detectArtefacts(spectrogram2, max_size, threshold) # And we detect and remove any possible artefacts
     
     spectrogram = numpy.dstack([spectrogram2,spectrogram[0:a,0:b,1],spectrogram[0:a,0:b,2]])
     spectrogram = PIL.Image.fromarray(spectrogram,'HSV')
-    spectrogram = spectrogram.convert('RGB')
+    spectrogram = spectrogram.convert('RGB') # Conversion to RGB representation is necessary when saving as jpg with PIL
     
 
     filePath2 = filePath.split(".")
