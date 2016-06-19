@@ -304,13 +304,16 @@ class Interface(Frame) : # We define our window
                 self.printOnConsole("Opening "+str(self.file)+"...")
                 if (self.file.endswith(".wav") or self.file.endswith(".wav/")) :
                     self.printOnConsole("Generating spectrogram...")
-                    self.file = str(spectrogram.main(str(self.file),self.threshold, self.margin))
+                    pic = str(spectrogram.main(str(self.file),self.threshold, self.margin))
                     self.printOnConsole("Done.")
+                    self.setImage(str(pic))
+                    self.printOnConsole("Detecting signals...")
+                    files = sign_detect2.main(str(pic),self.margin,self.threshold,True) # Detection of signals on the spectrogram
+                else :
+                    self.setImage(str(self.file))
+                    self.printOnConsole("Detecting signals...")
+                    files = sign_detect2.main(str(self.file),self.margin,self.threshold,True) # Detection of signals on the spectrogram
 
-                self.setImage(str(self.file))
-            
-                self.printOnConsole("Detecting signals...")
-                files = sign_detect2.main(str(self.file),self.margin,self.threshold,True) # Detection of signals on the spectrogram
                 self.printOnConsole("Done.")
             else :
                 self.printOnConsole("Fatal Error: Aborting Signal detection")
