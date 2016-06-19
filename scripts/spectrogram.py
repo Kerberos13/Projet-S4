@@ -105,6 +105,8 @@ def removeArtefacts(spectrogram, max_size, l) :
 
     spectrogram = numpy.asarray(spectrogram, dtype = numpy.uint8)
 
+    print(numpy.sum(spectrogram,(0,1)))
+
     return spectrogram
 
 
@@ -175,12 +177,14 @@ def detectArtefacts(spectrogram, max_size, threshold) :
         analyse2.append(0)
         signals.append(0)
 
+    #print(analyse0)
+
     analyse = list(analyse0)
     for i in range(0,h) :
-        if analyse[i] == 1 :
+        if (analyse[i] == 1) :
             for k in range(i,h) :
-                if analyse0[k] == 0 or k == h-1 :
-                    if abs(k-i) <= max_size : # We only consider small enough signals that can be artefacts
+                if ((analyse0[k] == 0) or (k == h-1)) :
+                    if (abs(k-i) <= max_size) : # We only consider small enough signals that can be artefacts
                         for l in range(i,k+1) :
                             analyse[l] = 1
                     else :
@@ -215,8 +219,6 @@ def detectArtefacts(spectrogram, max_size, threshold) :
                     new_signal = True
 
             if not new_signal :
-                #if new_signalA == False and new_signalB == False :
-                #if True :
                 for k in range(i-margin,i+margin+1) :
                     analyse2[k] = 1
 
@@ -351,8 +353,8 @@ def main(filePath, threshold, margin) :
     spectrogram = numpy.asarray(spectrogram,dtype=numpy.uint8)
     a,b = spectrogram.shape[0],spectrogram.shape[1]
     
-    max_size = int(ceil(8*(800/1200)))
-   
+    max_size = int(ceil(8.*(800./1200.)))
+
     spectrogram2 = spectrogram[0:a:1,0:b:1,0]
     spectrogram2 = centering(spectrogram2, threshold, margin)
     spectrogram2 = detectArtefacts(spectrogram2, max_size, threshold)
