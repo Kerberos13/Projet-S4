@@ -26,9 +26,8 @@ def main(Folder, threshold, margin, Width,Height) :
     files = os.listdir(Folder)
     files2 = list()
     for elt in files :
-        if len(elt) != 0 and elt.endswith(".jpg") :
+        if len(elt) != 0 and (elt.endswith(".jpg")) :# or elt.endswith(".bmp")) :
             files2.append(Folder+"/"+elt)
-
 
     i = 0
     for filepath in files2 :

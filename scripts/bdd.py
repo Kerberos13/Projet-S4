@@ -13,7 +13,8 @@
 # Environment describes the conditions by concatenating two elements of two distinct lists: one from the env list and one from the receiv list
 
 
-# At the moment, one should use this script with the following command line : python bdd2.py folderToExplore folderToStore modulation ID
+# At the moment, one should use this script with the following command line : python bdd2.py <folderToExplore> <folderToStore> <modulation> <ID>
+
 # which means that the folder to explore should contain only one type of modulation
 # ID is a natural integer that is linked to the modulation type, ie if it is a new modulation type, the ID should be reset to 0
 
