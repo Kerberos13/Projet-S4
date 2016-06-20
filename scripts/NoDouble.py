@@ -5,7 +5,7 @@
 # This script analyses all pictures in a folder and removes all redundant pictures (ie if exact double)
 
 
-# At the moment, one should use this script with the following command line : python NoDouble.py folderToExplore
+# At the moment, one should use this script with the following command line : python NoDouble.py <folderToExplore>
 
 import os,sys,numpy
 from PIL import Image
@@ -19,10 +19,10 @@ def main(folder) :
 
         files = os.listdir(folder)
         
-        offset = 5933
+        offset = 0#5933
         i = offset
         for elt in files[offset:] :
-            if elt.endswith(".jpg") : # We can analyse this picture
+            if elt.endswith(".jpg") or elt.endswith(".bmp") : # We can analyse this picture
                 
                 if os.path.exists(folder+"/"+elt) :
 
@@ -31,8 +31,8 @@ def main(folder) :
 
                     for el in files[i+1:] : # The rest of the pictures
                         
-                        if os.path.exists(folder+"/"+el) and el.endswith(".jpg"):
-                            
+                        if os.path.exists(folder+"/"+el) and (el.endswith(".jpg") or el.endswith(".bmp")):
+                            #print(elt,el) 
                             img2 = Image.open(folder+"/"+el)
 
                             # If we arrive at this point, this means that we have successfully opened img1 and img2. We can now compare them
@@ -43,6 +43,8 @@ def main(folder) :
 
                             W1,H1 = img1.size[0],img1.size[1]
                             W2,H2 = img2.size[0],img2.size[1]
+
+                            #print(W1,W2,H1,H2)
 
                             """
                             if W1 < W2 :
