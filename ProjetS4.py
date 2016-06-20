@@ -555,6 +555,8 @@ combostyle.theme_use('combostyle')
 
 window.title("Project 52 - Telecom Bretagne: Usage of deep neuronal networks for radio spectrum analysis")
 window.option_add("*background",FRAME_BACKGROUND)
+icon = PhotoImage(file='pictures/icon.png')
+window.tk.call('wm','iconphoto',window._w,icon)
 
 interface = Interface(window,pic)
 interface.clean()
