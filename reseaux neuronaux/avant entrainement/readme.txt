@@ -1,0 +1,1 @@
+﻿ce fichier est utilisé pour générer une matrice qui va être l'entrée de l'entraînement.
