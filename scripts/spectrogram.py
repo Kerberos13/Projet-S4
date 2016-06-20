@@ -42,7 +42,21 @@ def read(filePath) :
         else :
             print("Unsupported number of channels - Fatal Error.\n")
             sys.exit()
-       
+      
+        fsampling = 1.8*10**6 # in Hz or SPS (Samples Per Second)
+        duration = .07 # Duration in seconds
+        max_length = ceil(fsampling*duration) - 1
+
+        if max_length < len(data) :
+            a = floor(len(data)-max_length)/2
+            b = len(data)-1-a
+        else :
+            a = 0
+            b = len(data)-1
+        #print(a,b,a+b,b-a,max_length,len(data))
+        
+        data = data[0:b]
+
         return data
     
     else :
