@@ -44,15 +44,17 @@ def read(filePath) :
             sys.exit()
       
         fsampling = 1.8*10**6 # in Hz or SPS (Samples Per Second)
-        duration = .07 # Duration in seconds
+        duration = .5 # Duration in seconds
         max_length = ceil(fsampling*duration) - 1
 
+        #print(max_length)
+
         if max_length < len(data) :
-            a = floor(len(data)-max_length)/2
-            b = len(data)-1-a
+            a = int(floor(len(data)-max_length/2))
+            b = int(len(data)-1-a)
         else :
-            a = 0
-            b = len(data)-1
+            a = int(0)
+            b = int(len(data)-1)
         #print(a,b,a+b,b-a,max_length,len(data))
         
         data = data[0:b]
@@ -96,15 +98,22 @@ def generateSignal() :
 
 def removeArtefacts(spectrogram, max_size, l) :
 
+    a = 1.5
+    b = 10
     h = list()
     n = 2*l+2*max_size-1
+    #n = int(ceil(n*1.5))
     for i in range(0,n) : # We generate the convolution filter
         if i <= l-1 :
-            h.append(exp(-(8*(l/2-i)/l)**2))
+            #h.append(exp(-(b*(l/2-i)/l)**2))
+            h.append(a*i*exp(-a*i))
         elif i >= n-l :
-            h.append(exp(-(8*(l/2-(n-i))/l)**2))
+            #h.append(exp(-(b*(l/2-(n-i))/l)**2))
+            h.append(a*(n-i)*exp(-a*(n-i)))
         else :
             h.append(0.)
+
+    #print(h)
     
     h = numpy.asarray(h)
     h = numpy.vstack((h,h,h))
@@ -256,7 +265,8 @@ def centering(spectrogram, threshold, margin) :
 
         analyse2.append(0)
 
-    margin = int(floor(margin*len(analyse)/100)+1)
+    margin = int(floor(margin*len(analyse)/100)*1.2+1)
+    #margin2 = int(floor(margin*len(analyse)/100)+1)
 
     for i in range(0,margin) :
         if (analyse[i] == 1) :
