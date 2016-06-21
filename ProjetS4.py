@@ -125,7 +125,7 @@ class Interface(Frame) : # We define our window
 
         # Box Width
         self.boxWidth = 6
-        self.LboxWidth = Label(self,text="Box Thickness",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.LboxWidth = Label(self,text="Lines' Thickness",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.LboxWidth.grid(row=7,column=3,padx=2,sticky=S+E+W)
         self.OboxWidth = Spinbox(self, from_=4, to=10, increment = 2, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.OboxWidth.grid(row=8, column=3, padx=2, sticky=W+N+E)
@@ -133,7 +133,7 @@ class Interface(Frame) : # We define our window
 
         # Box Color
         self.color = [250,250,250] # RGB
-        self.Lcolor = Label(self, text="Box Color",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
+        self.Lcolor = Label(self, text="Lines' Color",background=FRAME_BACKGROUND,foreground=WIDGET_FOREGROUND)
         self.Lcolor.grid(row=7, column=4,padx=2,sticky=W+S+E)
         self.Ocolor = Combobox(self, background=WIDGET_BACKGROUND, foreground=WIDGET_FOREGROUND)
         self.Ocolor.grid(row=8, column=4,padx=2,sticky=N+E+W)
