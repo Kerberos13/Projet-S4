@@ -98,8 +98,8 @@ def generateSignal() :
 
 def removeArtefacts(spectrogram, max_size, l) :
 
-    a = 1.5
-    b = 10
+    a = 1.5 # Parameter of the Poisson blur - a should be set between 0 and 5 - stable starting from 2
+    #b = 10 # Parameter of the gaussian blur - b should be set between 0 and 30 - stable starting from 10
     h = list()
     n = 2*l+2*max_size-1
     #n = int(ceil(n*1.5))
