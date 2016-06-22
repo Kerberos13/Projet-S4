@@ -32,6 +32,9 @@ davantage de messages apparaîtront ainsi, ce qui peut être utile en cas de com
 L'interface graphique utilise tkinter, qui est incluse par défaut avec Python. Vous pouvez sélectionner un fichier à l'aide du
 bouton dédié, régler les paramètres de seuil, de marge, l'épaisseur et la couleur des lignes, et choisir entre le réseau de neurones
 de type CNN ou SDA à l'aide de l'interrupteur approprié. Le bouton compute lancera alors le calcul et affichera le spectrogram.
+Nous tenons à souligner que par défaut, la valeur des marges devrait être réglée sur 10, puisque la base de données à été générée
+avec cette valeur. La possibilité d'utiliser des marges plus faibles reste toutefois disponible car elle peut s'avérer utile lors
+de l'utilisation de matériel SDR.
 
 
 Le logiciel possède plusieurs modules. Pour simplifier, le module principal commence par appeler le module spectrogram si nécessaire

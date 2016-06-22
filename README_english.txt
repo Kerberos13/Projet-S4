@@ -31,6 +31,8 @@ will be displayed, which can be useful in case of an unexpected behavior.
 The GUI runs on tkinter, which comes by default with Python. You can select a file with the dedicated button, set the threshold
 and margin values, lines' width and color, and choose between the CNN network or the SDA network with the appropriate toggle
 button. The compute button will then launch the calculation and display the spectrogram.
+Please note that the margin value should be set to 10 by default as the database was generated with this parameter. The 
+possibility to have smaller margins remains nonetheless, since it might be useful when using SDR equipment.
 
 
 The software has several modules. Basically, the main module starts by calling the spectrogram module in order to generate the 
