@@ -290,7 +290,7 @@ def centering(spectrogram, threshold, margin) :
         i = 0
         while analyse[i] != 0 and i < margin :
             i+=1
-        spectrogram2 = merge(spectrogram[0:v,i:h-1],spectrogram[0:v,0:i])
+        spectrogram2 = merge(spectrogram[0:v,i:h],spectrogram[0:v,0:i])
 
 
     return spectrogram2
