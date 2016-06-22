@@ -285,11 +285,12 @@ def centering(spectrogram, threshold, margin) :
 
     analyse = analyse2
 
-    if analyse[0] == 1 or analyse[h] == 1 : # A signal is splitted
+    
+    if analyse[0] == 1 or analyse[h-1] == 1 : # A signal is splitted
         i = 0
         while analyse[i] != 0 and i < margin :
             i+=1
-        spectrogram2 = merge(spectrogram[0:v,i:h],spectrogram[0:v,0:i])
+        spectrogram2 = merge(spectrogram[0:v,i:h-1],spectrogram[0:v,0:i])
 
 
     return spectrogram2
